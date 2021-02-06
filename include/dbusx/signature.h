@@ -15,37 +15,37 @@
 namespace dbusx {
 
 template <typename T>
-constexpr auto signature = std::invoke([] {
+constexpr auto signature_basic = std::invoke([] {
     using Type = std::remove_cvref_t<T>;
 
-    if constexpr (std::is_same_v<Type, char>) {
+    if constexpr (std::is_same<Type, char>::value) {
         return std::array{'y'};
-    } else if constexpr (std::is_same_v<Type, bool>) {
+    } else if constexpr (std::is_same<Type, bool>::value) {
         return std::array{'b'};
-    } else if constexpr (std::is_same_v<Type, int16_t>) {
+    } else if constexpr (std::is_same<Type, int16_t>::value) {
         return std::array{'n'};
-    } else if constexpr (std::is_same_v<Type, uint16_t>) {
+    } else if constexpr (std::is_same<Type, uint16_t>::value) {
         return std::array{'q'};
-    } else if constexpr (std::is_same_v<Type, int32_t>) {
+    } else if constexpr (std::is_same<Type, int32_t>::value) {
         return std::array{'i'};
-    } else if constexpr (std::is_same_v<Type, uint32_t>) {
+    } else if constexpr (std::is_same<Type, uint32_t>::value) {
         return std::array{'u'};
-    } else if constexpr (std::is_same_v<Type, int64_t>) {
+    } else if constexpr (std::is_same<Type, int64_t>::value) {
         return std::array{'x'};
-    } else if constexpr (std::is_same_v<Type, uint64_t>) {
+    } else if constexpr (std::is_same<Type, uint64_t>::value) {
         return std::array{'t'};
-    } else if constexpr (std::is_same_v<Type, double>) {
+    } else if constexpr (std::is_same<Type, double>::value) {
         return std::array{'d'};
         // todo: UNIX_FD
         // } else if constexpr () {
         //     return std::array{'h'};
-    } else if constexpr (std::is_same_v<Type, std::string>) {
+    } else if constexpr (std::is_same<Type, std::string>::value) {
         return std::array{'s'};
-        //} else if constexpr (std::is_same_v<Type, dbus_object_path>) {
+        //} else if constexpr (std::is_same<Type, dbus_object_path>::value) {
         //    return std::array{'o'};
-        //} else if constexpr (std::is_same_v<Type, dbus_signature>) {
+        //} else if constexpr (std::is_same<Type, dbus_signature>::value) {
         //    return std::array{'g'};
-    } else if constexpr (std::is_same_v<Type, std::any>) {
+    } else if constexpr (std::is_same<Type, std::any>::value) {
         return std::array{'v'};
     } else {
         static_assert(always_false_v<Type>, "unsupported type");
@@ -54,21 +54,31 @@ constexpr auto signature = std::invoke([] {
 
 // array
 template <typename T>
-constexpr auto signature<std::vector<T>> = std::invoke([] {
-    return concat(std::array{'a'}, signature<T>);
+constexpr auto signature_basic<std::vector<T>> = std::invoke([] {
+    return concat(std::array{'a'}, signature_basic<T>);
 });
 
 // dict
 template <typename F, typename S>
-constexpr auto signature<std::unordered_map<F, S>> = std::invoke([] {
-    return concat(std::array{'{'}, signature<F>, signature<S>, std::array{'}'});
+constexpr auto signature_basic<std::unordered_map<F, S>> = std::invoke([] {
+    return concat(std::array{'{'}, signature_basic<F>, signature_basic<S>, std::array{'}'});
 });
 
 // struct
 template <typename... T>
-constexpr auto signature<std::tuple<T...>> = std::invoke([] {
-    return concat(std::array{'('}, signature<T>..., std::array{')'});
+constexpr auto signature_basic<std::tuple<T...>> = std::invoke([] {
+    return concat(std::array{'('}, signature_basic<T>..., std::array{')'});
 });
+
+template <typename... T>
+constexpr auto signature = std::invoke([] { return concat(signature_basic<T>...); });
+
+template <typename T>
+constexpr auto signature_ntstr = std::invoke([] { return concat(signature<T>, std::array{'\0'}); });
+
+template <typename T>
+auto unwrap_type() {
+}
 
 } // namespace dbusx
 

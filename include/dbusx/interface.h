@@ -7,7 +7,8 @@ namespace dbusx {
 
 class interface {
 public:
-    virtual std::vector<vtable::vtable> exported() = 0;
+    virtual std::string interface_name() = 0;
+    virtual vtable::vtable exported() = 0;
 };
 
 } // namespace dbusx

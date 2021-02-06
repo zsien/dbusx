@@ -1,6 +1,7 @@
 #include "dbusx/bus.h"
 
 #include <stdexcept>
+#include <memory>
 
 #include <systemd/sd-bus.h>
 
@@ -11,45 +12,25 @@
 
 using namespace dbusx;
 
-#define check(x)                                                               \
-    ({                                                                         \
-        int r = x;                                                             \
-        errno = r < 0 ? -r : 0;                                                \
-        printf(#x ": %m\n");                                                   \
-        if (r < 0) return false;                                               \
-    })
-
-static int
-method_callback(sd_bus_message *m, void *userdata, sd_bus_error *error) {
-    message msg(std::make_unique<message_private>(m));
-
-    printf("Got called with userdata=%p\n", userdata);
-    error->message = "gogogo";
-    error->name = "err name";
-    error->_need_free = static_cast<int>(false);
-    return 1;
-}
-
 bus::bus(type type)
     : d_ptr_(std::make_unique<bus_private>()) {
     decltype(&sd_bus_open) f;
 
     switch (type) {
-    case type::user:
+    case type::USER:
         f = &sd_bus_open_user;
         break;
-    case type::system:
+    case type::SYSTEM:
         f = &sd_bus_open_system;
         break;
-    case type::starter:
+    case type::STARTER:
         f = &sd_bus_open;
         break;
     }
 
     int ret = f(&d_ptr_->conn_);
     if (ret < 0) {
-        throw std::runtime_error(std::string("Failed to connect to dbus: ") +
-                                 strerror(ret));
+        throw std::runtime_error(std::string("Failed to connect to dbus: ") + strerror(-ret));
     }
 }
 
@@ -66,39 +47,51 @@ bool bus::release_name(const std::string &name) {
 }
 
 // TODO: 优化
-bool bus::export_interface(const std::string &path,
-                           const std::string &iface,
-                           interface *obj) {
-    auto exported = obj->exported();
+bool bus::export_interface(const std::string &path, const std::string &iface, interface *obj) {
+    auto &interface_map = d_ptr_->ctx_[path];
 
-    auto *vtable = new std::vector<sd_bus_vtable>;
-    vtable->reserve(1 + exported.size() + 1);
-
-    vtable->push_back(SD_BUS_VTABLE_START(0));
-
-    for (const auto &i : exported) {
-        switch (i.type) {
-        case vtable::type::method: {
-            const auto &m = std::get<vtable::method>(i.x);
-            vtable->push_back(SD_BUS_METHOD(i.member.c_str(),
-                                            m.in_signatures,
-                                            m.out_signatures,
-                                            method_callback,
-                                            0));
-        } break;
-        default:
-            break;
-        }
+    // the interface has exported
+    if (interface_map.find(iface) != interface_map.end()) {
+        return false;
     }
 
-    vtable->push_back(SD_BUS_VTABLE_END);
+    auto d = std::make_unique<data>(this, obj);
+
+    auto exported = obj->exported();
+
+    d->vtable.reserve(1 + exported.methods.size() + exported.properties.size() +
+                      exported.signals.size() + 1);
+
+    d->vtable.push_back(SD_BUS_VTABLE_START(0));
+
+    for (const auto &i : exported.methods) {
+        d->invokers.emplace(i.first, i.second.invoke);
+        d->vtable.push_back(SD_BUS_METHOD(i.first.c_str(),
+                                          i.second.in_signatures,
+                                          i.second.out_signatures,
+                                          &bus_private::on_method_call,
+                                          SD_BUS_VTABLE_UNPRIVILEGED));
+    }
+
+    // for (const auto &i : exported.properties) {
+    // }
+
+    // for (const auto &i : exported.signals) {
+    // }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+    d->vtable.push_back(SD_BUS_VTABLE_END);
+#pragma GCC diagnostic pop
 
     int ret = sd_bus_add_object_vtable(d_ptr_->conn_,
                                        nullptr,
                                        path.c_str(),
                                        iface.c_str(),
-                                       vtable->data(),
-                                       obj);
+                                       d->vtable.data(),
+                                       d.get());
+
+    interface_map.emplace(iface, std::move(d));
 
     // TODO: 错误处理
     return ret < 0;
@@ -106,8 +99,33 @@ bool bus::export_interface(const std::string &path,
 
 // TODO: 优化、错误处理
 void bus::start() {
+    int ret;
     for (;;) {
-        sd_bus_wait(d_ptr_->conn_, UINT64_MAX);
-        sd_bus_process(d_ptr_->conn_, NULL);
+        ret = sd_bus_process(d_ptr_->conn_, nullptr);
+        if (ret < 0) {
+            fprintf(stderr, "Failed to process bus: %s\n", strerror(-ret));
+            break;
+        }
+        if (ret > 0) {
+            continue;
+        }
+
+        ret = sd_bus_wait(d_ptr_->conn_, UINT64_MAX);
+        if (ret < 0) {
+            fprintf(stderr, "Failed to wait on bus: %s\n", strerror(-ret));
+            break;
+        }
     }
+}
+
+void bus::on_method_call(data *d, const message &&msg) {
+    auto member = msg.get_member();
+    auto invoker = d->invokers.find(member);
+    if (invoker == d->invokers.end()) {
+        return;
+    }
+
+    message ms;
+
+    invoker->second(d->i, msg);
 }

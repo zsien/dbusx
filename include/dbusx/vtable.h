@@ -2,37 +2,45 @@
 #define DBUSX_VTABLE_H
 
 #include <string>
-#include <variant>
 #include <vector>
+#include <unordered_map>
+
+#include "message.h"
 
 namespace dbusx {
 
+class interface;
+
 namespace vtable {
 
-enum class type {property, method, signal};
-
-struct property {
-    std::string signature;
-};
+enum class type { property, method, signal };
 
 struct method {
     const char *in_signatures;
     std::vector<std::string> in_names;
     const char *out_signatures;
     std::vector<std::string> out_names;
+    void (*invoke)(interface *, const message &);
+    uint64_t flags;
+};
+
+struct property {
+    std::string member;
+    std::string signature;
+    uint64_t flags;
 };
 
 struct signal {
     std::string member;
     std::vector<std::string> signatures;
     std::vector<std::string> names;
+    uint64_t flags;
 };
 
 struct vtable {
-    type type;
-    uint64_t flags;
-    std::string member;
-    std::variant<property, method, signal> x;
+    std::unordered_map<std::string, method> methods;
+    std::vector<property> properties;
+    std::vector<signal> signals;
 };
 
 } // namespace vtable

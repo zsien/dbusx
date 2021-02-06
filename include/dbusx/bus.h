@@ -6,25 +6,29 @@
 namespace dbusx {
 
 class bus_private;
-class interface;
+struct data;
 
-enum class type { user, system, starter };
+class interface;
+class message;
+
+enum class type { USER, SYSTEM, STARTER };
 
 class bus {
+    friend bus_private;
+
 public:
     bus(type type);
     ~bus();
 
     bool request_name(const std::string &name);
     bool release_name(const std::string &name);
-    bool export_interface(const std::string &path,
-                          const std::string &iface,
-                          interface *obj);
+    bool export_interface(const std::string &path, const std::string &iface, interface *obj);
 
     void start();
 
 private:
     std::unique_ptr<bus_private> d_ptr_;
+    void on_method_call(data *d, const message &&msg);
 };
 
 } // namespace dbusx

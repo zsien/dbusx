@@ -6,11 +6,11 @@
 
 #include "example.h"
 
-int main(int argc, char *argv[]) {
-    dbusx::bus bus(dbusx::type::user);
+int main() {
+    dbusx::bus bus(dbusx::type::USER);
     bus.request_name("cn.zsien.dbusx.example");
-    example a;
 
+    example a;
     bus.export_interface("/cn/zsien/dbusx/example", "cn.zsien.dbusx.example.control", &a);
 
     bus.start();

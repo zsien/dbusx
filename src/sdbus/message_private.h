@@ -9,7 +9,9 @@ class __attribute__((visibility("hidden"))) message_private {
     friend class message;
 
 public:
+    message_private() = default;
     explicit message_private(sd_bus_message *message);
+    ~message_private();
 
 private:
     sd_bus_message *message_;
