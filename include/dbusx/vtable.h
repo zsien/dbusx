@@ -25,13 +25,11 @@ struct method {
 };
 
 struct property {
-    std::string member;
     std::string signature;
     uint64_t flags;
 };
 
 struct signal {
-    std::string member;
     std::vector<std::string> signatures;
     std::vector<std::string> names;
     uint64_t flags;
@@ -39,8 +37,8 @@ struct signal {
 
 struct vtable {
     std::unordered_map<std::string, method> methods;
-    std::vector<property> properties;
-    std::vector<signal> signals;
+    std::unordered_map<std::string, property> properties;
+    std::unordered_map<std::string, signal> signals;
 };
 
 } // namespace vtable
