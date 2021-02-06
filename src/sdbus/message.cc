@@ -68,13 +68,13 @@ message::type message::get_type() const {
 
 int32_t message::read_int32() const {
     int32_t i;
-    sd_bus_message_read(d_ptr_->message_, signature_ntstr<int32_t>.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, signature_nt<int32_t>.data(), &i);
     return i;
 }
 
 std::string message::read_string() const {
     char *s;
-    sd_bus_message_read(d_ptr_->message_, signature_ntstr<std::string>.data(), &s);
+    sd_bus_message_read(d_ptr_->message_, signature_nt<std::string>.data(), &s);
     return s;
 }
 

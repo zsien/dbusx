@@ -73,8 +73,9 @@ constexpr auto signature_basic<std::tuple<T...>> = std::invoke([] {
 template <typename... T>
 constexpr auto signature = std::invoke([] { return concat(signature_basic<T>...); });
 
+// signature with null-terminated
 template <typename T>
-constexpr auto signature_ntstr = std::invoke([] { return concat(signature<T>, std::array{'\0'}); });
+constexpr auto signature_nt = std::invoke([] { return concat(signature<T>, std::array{'\0'}); });
 
 template <typename T>
 auto unwrap_type() {

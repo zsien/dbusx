@@ -90,9 +90,9 @@ struct method<F> {
         //}
 
         return {
-            .in_signatures = ins.data(),
+            .in_signatures = signature_nt<IN...>.data(),
             .in_names = {},
-            .out_signatures = out.data(),
+            .out_signatures = signature_nt<OUT>.data(),
             .out_names = {},
             .invoke = &method::invoke,
             .flags = 0,

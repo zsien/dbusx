@@ -88,9 +88,9 @@ public:
     int read_fd() const;
 
     template <typename... T>
-    bool append(T &... a) {
+    bool append(T &...a) {
         if constexpr (all_pod<T...>::value) {
-            return c_append(signature_ntstr<T...>.data(), a...);
+            return c_append(signature_nt<T...>.data(), a...);
         }
     }
 
