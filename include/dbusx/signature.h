@@ -15,7 +15,7 @@
 namespace dbusx {
 
 template <typename T>
-constexpr auto signature_basic = std::invoke([] {
+constexpr auto signature_single = std::invoke([] {
     using Type = std::remove_cvref_t<T>;
 
     if constexpr (std::is_same<Type, char>::value) {
@@ -45,6 +45,19 @@ constexpr auto signature_basic = std::invoke([] {
         //    return std::array{'o'};
         //} else if constexpr (std::is_same<Type, dbus_signature>::value) {
         //    return std::array{'g'};
+    } else if constexpr (is_vector<Type>::value) {
+        // array
+        return concat(std::array{'a'}, signature_single<typename Type::value_type>);
+    } else if constexpr (is_unordered_map<Type>::value) {
+        // dict
+        return concat(std::array{'{'},
+                      signature_single<typename Type::key_type>,
+                      signature_single<typename Type::mapped_type>,
+                      std::array{'}'});
+    } else if constexpr (is_tuple<Type>::value) {
+        // struct
+        // top-level cv-qualifiers and reference removed
+        return signature_single<Type>;
     } else if constexpr (std::is_same<Type, std::any>::value) {
         return std::array{'v'};
     } else {
@@ -52,30 +65,19 @@ constexpr auto signature_basic = std::invoke([] {
     }
 });
 
-// array
-template <typename T>
-constexpr auto signature_basic<std::vector<T>> = std::invoke([] {
-    return concat(std::array{'a'}, signature_basic<T>);
-});
-
-// dict
-template <typename F, typename S>
-constexpr auto signature_basic<std::unordered_map<F, S>> = std::invoke([] {
-    return concat(std::array{'{'}, signature_basic<F>, signature_basic<S>, std::array{'}'});
-});
-
 // struct
 template <typename... T>
-constexpr auto signature_basic<std::tuple<T...>> = std::invoke([] {
-    return concat(std::array{'('}, signature_basic<T>..., std::array{')'});
-});
+constexpr auto signature_single<std::tuple<T...>> = concat(std::array{'('}, signature_single<T>..., std::array{')'});
 
 template <typename... T>
-constexpr auto signature = std::invoke([] { return concat(signature_basic<T>...); });
+constexpr auto signature = concat(signature_single<T>...);
 
 // signature with null-terminated
 template <typename T>
-constexpr auto signature_nt = std::invoke([] { return concat(signature<T>, std::array{'\0'}); });
+constexpr auto signature_nt = concat(signature<T>, std::array{'\0'});
+
+template <typename... T>
+constexpr auto signature_nt_arr = std::array{signature_nt<T>.data()...};
 
 template <typename T>
 auto unwrap_type() {

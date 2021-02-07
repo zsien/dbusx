@@ -23,14 +23,12 @@ struct method<F> {
 
     // using out_type = OUT;
 
-    // std::array<std::string_view>{"i", "t", "as"}
-    static constexpr auto in_arr = std::invoke([] {
-        return std::array{std::string_view(signature<IN>.cbegin(), signature<IN>.size())...};
-    });
+    // const char *const *{"i", "t", "as"}
+    static constexpr auto in_arr = signature_nt_arr<IN...>.data();
 
     // std::string_view{"as"}
-    static constexpr auto out_str = std::invoke(
-        [] { return std::string_view(signature<OUT>.cbegin(), signature<OUT>.size()); });
+    static constexpr auto out_str =
+        std::string_view(signature<OUT>.cbegin(), signature<OUT>.size());
 
     static vtable::method vtable() {
         // std::vector<std::string> in_signatures;
