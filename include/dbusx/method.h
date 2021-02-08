@@ -30,7 +30,7 @@ struct method<F> {
     static constexpr auto out_str =
         std::string_view(signature<OUT>.cbegin(), signature<OUT>.size());
 
-    static vtable::method vtable() {
+    static vtable::method get_vtable() {
         // std::vector<std::string> in_signatures;
         // in_signatures.reserve(in_cnt);
         // for (const auto &i : in_arr) {
@@ -48,7 +48,7 @@ struct method<F> {
             .in_names = {},
             .out_signatures = signature_nt<OUT>.data(),
             .out_names = {},
-            .invoke = &method::invoke,
+            .invoker = &method::invoke,
             .flags = 0,
         };
     }

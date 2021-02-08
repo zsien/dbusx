@@ -48,29 +48,44 @@ bool bus::release_name(const std::string &name) {
 
 // TODO: 优化
 bool bus::export_interface(const std::string &path, const std::string &iface, interface *obj) {
-    auto &interface_map = d_ptr_->ctx_[path];
+    auto &exported_interfaces = d_ptr_->exported_[path];
 
-    // the interface has exported
-    if (interface_map.find(iface) != interface_map.end()) {
+    if (exported_interfaces.find(iface) != exported_interfaces.end()) {
+        // this interface exported
         return false;
     }
 
-    auto d = std::make_unique<data>(this, obj);
-
     auto exported = obj->exported();
 
-    d->vtable.reserve(1 + exported.methods.size() + exported.properties.size() +
-                      exported.signals.size() + 1);
+    auto d = std::make_unique<data>();
+
+    d->ud.reserve(exported.methods.size() +      // methods
+                  exported.properties.size() * 2 // properties getter + setter
+    );
+
+    d->vtable.reserve(1 +                          // start
+                      exported.methods.size() +    // methods
+                      exported.properties.size() + // properties
+                      exported.signals.size() +    // signals
+                      1                            // end
+    );
 
     d->vtable.push_back(SD_BUS_VTABLE_START(0));
 
     for (const auto &i : exported.methods) {
-        d->invokers.emplace(i.first, i.second.invoke);
-        d->vtable.push_back(SD_BUS_METHOD(i.first.c_str(),
-                                          i.second.in_signatures,
-                                          i.second.out_signatures,
-                                          &bus_private::on_method_call,
-                                          SD_BUS_VTABLE_UNPRIVILEGED));
+        auto current_offset = d->ud.size() * sizeof(userdata);
+
+        d->ud.emplace_back(userdata{
+            .i = obj,
+            .invoker = i.second.invoker,
+        });
+
+        d->vtable.push_back(SD_BUS_METHOD_WITH_OFFSET(i.first.c_str(),
+                                                      i.second.in_signatures,
+                                                      i.second.out_signatures,
+                                                      &bus_private::on_method_call,
+                                                      current_offset,
+                                                      SD_BUS_VTABLE_UNPRIVILEGED));
     }
 
     // for (const auto &i : exported.properties) {
@@ -89,9 +104,9 @@ bool bus::export_interface(const std::string &path, const std::string &iface, in
                                        path.c_str(),
                                        iface.c_str(),
                                        d->vtable.data(),
-                                       d.get());
+                                       d->ud.data());
 
-    interface_map.emplace(iface, std::move(d));
+    exported_interfaces.emplace(iface, std::move(d));
 
     // TODO: 错误处理
     return ret < 0;
@@ -116,16 +131,4 @@ void bus::start() {
             break;
         }
     }
-}
-
-void bus::on_method_call(data *d, const message &&msg) {
-    auto member = msg.get_member();
-    auto invoker = d->invokers.find(member);
-    if (invoker == d->invokers.end()) {
-        return;
-    }
-
-    message ms;
-
-    invoker->second(d->i, msg);
 }

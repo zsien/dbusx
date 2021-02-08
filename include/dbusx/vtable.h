@@ -5,13 +5,14 @@
 #include <vector>
 #include <unordered_map>
 
-#include "message.h"
-
 namespace dbusx {
 
 class interface;
+class message;
 
 namespace vtable {
+
+using method_invoker = void (*)(interface *, const message &);
 
 enum class type { property, method, signal };
 
@@ -20,12 +21,12 @@ struct method {
     std::vector<std::string> in_names;
     const char *out_signatures;
     std::vector<std::string> out_names;
-    void (*invoke)(interface *, const message &);
+    method_invoker invoker;
     uint64_t flags;
 };
 
 struct property {
-    std::string signature;
+    const char *signature;
     uint64_t flags;
 };
 

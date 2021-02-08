@@ -1,9 +1,13 @@
 #ifndef DBUSX_INTERFACE_H
 #define DBUSX_INTERFACE_H
 
-#include "vtable.h"
+#include <string>
 
 namespace dbusx {
+
+namespace vtable {
+    struct vtable;
+}
 
 class interface {
 public:

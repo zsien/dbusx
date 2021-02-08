@@ -28,7 +28,6 @@ public:
 
 private:
     std::unique_ptr<bus_private> d_ptr_;
-    void on_method_call(data *d, const message &&msg);
 };
 
 } // namespace dbusx

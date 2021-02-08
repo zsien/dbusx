@@ -17,7 +17,7 @@ dbusx::vtable::vtable example::exported() {
     return {
         .methods =
             {
-                {"stringLength", dbusx::method<&example::string_length>::vtable()},
+                {"stringLength", dbusx::method<&example::string_length>::get_vtable()},
             },
         .properties = {},
         .signals = {},
