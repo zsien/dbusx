@@ -11,6 +11,8 @@ namespace dbusx {
 
 class message_private;
 
+class error;
+
 class message {
 public:
     enum class type {
@@ -64,6 +66,7 @@ public:
     message &operator=(message &&r) noexcept;
 
     message create_return() const;
+    message create_error(const error &error) const;
 
     std::string get_destination() const;
     std::string get_path() const;

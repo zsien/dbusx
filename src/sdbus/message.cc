@@ -5,6 +5,7 @@
 
 #include "message_private.h"
 #include "dbusx/signature.h"
+#include "dbusx/error.h"
 
 using namespace dbusx;
 
@@ -24,6 +25,22 @@ message &message::operator=(message &&r) noexcept = default;
 message message::create_return() const {
     message msg;
     sd_bus_message_new_method_return(d_ptr_->message_, &msg.d_ptr_->message_);
+
+    return msg;
+}
+
+message message::create_error(const error &err) const {
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc99-extensions"
+#endif
+    auto e = SD_BUS_ERROR_MAKE_CONST(err.name_.c_str(), err.message_.c_str());
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
+    message msg;
+    sd_bus_message_new_method_error(d_ptr_->message_, &msg.d_ptr_->message_, &e);
 
     return msg;
 }

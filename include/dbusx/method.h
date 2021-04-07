@@ -9,6 +9,7 @@
 #include "message.h"
 #include "signature.h"
 #include "vtable.h"
+#include "error.h"
 
 namespace dbusx {
 
@@ -54,15 +55,22 @@ struct method<F> {
     }
 
     static void invoke(interface *o, const message &m) {
-        C *obj = reinterpret_cast<C *>(o);
-        OUT r = (obj->*F)(m.read<IN>()...);
-        // TODO: out
+        try {
+            C *obj = reinterpret_cast<C *>(o);
+            OUT r = (obj->*F)(m.read<IN>()...);
+            // TODO: out
+            (void)r;
 
-        message ret = m.create_return();
-        ret.append(r);
-        bool a = ret.send();
-        (void)a;
-        // m.reply(r);
+            message ret = m.create_return();
+            ret.append(r);
+            bool a = ret.send();
+            (void)a;
+            // m.reply(r);
+        } catch (const dbusx::error &e) {
+            message ret = m.create_error(e);
+            bool a = ret.send();
+            (void)a;
+        }
     }
 };
 
