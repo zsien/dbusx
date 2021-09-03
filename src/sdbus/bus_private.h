@@ -31,7 +31,8 @@ class __attribute__((visibility("hidden"))) bus_private {
 
 private:
     sd_bus *conn_;
-    std::unordered_map<std::string, std::unordered_map<std::string, std::unique_ptr<data>>> exported_;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::unique_ptr<data>>>
+        exported_;
 
     static int on_method_call(sd_bus_message *m, void *userdata, sd_bus_error *error);
     static int on_property_get(sd_bus *bus,

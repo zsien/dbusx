@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "dbusx/utils.h"
+#include "utils.h"
 
 namespace dbusx {
 
@@ -67,7 +67,9 @@ constexpr auto signature_single = std::invoke([] {
 
 // struct
 template <typename... T>
-constexpr auto signature_single<std::tuple<T...>> = concat(std::array{'('}, signature_single<T>..., std::array{')'});
+constexpr auto signature_single<std::tuple<T...>> = concat(std::array{'('},
+                                                           signature_single<T>...,
+                                                           std::array{')'});
 
 template <typename... T>
 constexpr auto signature = concat(signature_single<T>...);
@@ -78,10 +80,6 @@ constexpr auto signature_nt = concat(signature<T>, std::array{'\0'});
 
 template <typename... T>
 constexpr auto signature_nt_arr = std::array{signature_nt<T>.data()...};
-
-template <typename T>
-auto unwrap_type() {
-}
 
 } // namespace dbusx
 

@@ -6,11 +6,12 @@
 namespace dbusx {
 
 namespace vtable {
-    struct vtable;
+struct vtable;
 }
 
 class interface {
 public:
+    virtual ~interface() = default;
     virtual std::string interface_name() = 0;
     virtual vtable::vtable exported() = 0;
 };

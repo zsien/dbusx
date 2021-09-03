@@ -10,7 +10,7 @@ AccessModifierOffset: -4
 ContinuationIndentWidth: 4
 
 AlignAfterOpenBracket: Align
-AlignOperands: true
+AlignOperands: Align
 PointerAlignment: Right
 DerivePointerAlignment: false
 
@@ -19,6 +19,7 @@ AllowShortFunctionsOnASingleLine: InlineOnly
 BinPackArguments: false
 BinPackParameters: false
 
+PenaltyBreakAssignment: 1000
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false

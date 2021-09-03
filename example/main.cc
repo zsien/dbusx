@@ -1,8 +1,6 @@
 #include <iostream>
 
 #include <dbusx/bus.h>
-#include <dbusx/method.h>
-#include <dbusx/signature.h>
 
 #include "example.h"
 

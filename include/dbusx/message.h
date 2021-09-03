@@ -4,8 +4,8 @@
 #include <memory>
 #include <string>
 
-#include "dbusx/utils.h"
-#include "dbusx/signature.h"
+#include "utils.h"
+#include "signature.h"
 
 namespace dbusx {
 

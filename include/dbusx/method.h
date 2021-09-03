@@ -28,8 +28,8 @@ struct method<F> {
     static constexpr auto in_arr = signature_nt_arr<IN...>.data();
 
     // std::string_view{"as"}
-    static constexpr auto out_str =
-        std::string_view(signature<OUT>.cbegin(), signature<OUT>.size());
+    static constexpr auto out_str = std::string_view(signature<OUT>.cbegin(),
+                                                     signature<OUT>.size());
 
     static vtable::method get_vtable() {
         // std::vector<std::string> in_signatures;
@@ -58,8 +58,6 @@ struct method<F> {
         try {
             C *obj = reinterpret_cast<C *>(o);
             OUT r = (obj->*F)(m.read<IN>()...);
-            // TODO: out
-            (void)r;
 
             message ret = m.create_return();
             ret.append(r);
