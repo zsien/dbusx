@@ -5,7 +5,7 @@
 #include "example.h"
 
 int main() {
-    dbusx::bus bus(dbusx::type::USER);
+    dbusx::bus bus(dbusx::bus_type::USER);
     bus.request_name("cn.zsien.dbusx.example");
 
     example a;

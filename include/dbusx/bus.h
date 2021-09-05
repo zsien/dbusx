@@ -11,13 +11,13 @@ struct data;
 class interface;
 class message;
 
-enum class type { USER, SYSTEM, STARTER };
+enum class bus_type { USER, SYSTEM, STARTER };
 
 class bus {
     friend bus_private;
 
 public:
-    bus(type type);
+    bus(bus_type type);
     ~bus();
 
     bool request_name(const std::string &name);

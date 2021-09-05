@@ -12,18 +12,18 @@
 
 using namespace dbusx;
 
-bus::bus(type type)
+bus::bus(bus_type type)
     : d_ptr_(std::make_unique<bus_private>()) {
     decltype(&sd_bus_open) f;
 
     switch (type) {
-    case type::USER:
+    case bus_type::USER:
         f = &sd_bus_open_user;
         break;
-    case type::SYSTEM:
+    case bus_type::SYSTEM:
         f = &sd_bus_open_system;
         break;
-    case type::STARTER:
+    case bus_type::STARTER:
         f = &sd_bus_open;
         break;
     }

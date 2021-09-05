@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 #include "message_private.h"
-#include "dbusx/signature.h"
+#include "dbusx/type.h"
 #include "dbusx/error.h"
 
 using namespace dbusx;
@@ -83,15 +83,75 @@ message::type message::get_type() const {
     return type::METHOD_CALL;
 }
 
+char message::read_byte() const {
+    char i;
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<char>::signature_nt.data(), &i);
+    return i;
+}
+
+bool message::read_bool() const {
+    int i;
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<bool>::signature_nt.data(), &i);
+    return i;
+}
+
+int16_t message::read_int16() const {
+    int16_t i;
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<int16_t>::signature_nt.data(), &i);
+    return i;
+}
+
+uint16_t message::read_uint16() const {
+    uint16_t i;
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<uint16_t>::signature_nt.data(), &i);
+    return i;
+}
+
 int32_t message::read_int32() const {
     int32_t i;
-    sd_bus_message_read(d_ptr_->message_, signature_nt<int32_t>.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<int32_t>::signature_nt.data(), &i);
+    return i;
+}
+
+uint32_t message::read_uint32() const {
+    uint32_t i;
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<uint32_t>::signature_nt.data(), &i);
+    return i;
+}
+
+int64_t message::read_int64() const {
+    int64_t i;
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<int64_t>::signature_nt.data(), &i);
+    return i;
+}
+
+uint64_t message::read_uint64() const {
+    uint64_t i;
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<uint64_t>::signature_nt.data(), &i);
+    return i;
+}
+
+double message::read_double() const {
+    double i;
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<double>::signature_nt.data(), &i);
     return i;
 }
 
 std::string message::read_string() const {
     char *s;
-    sd_bus_message_read(d_ptr_->message_, signature_nt<std::string>.data(), &s);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<std::string>::signature_nt.data(), &s);
+    return s;
+}
+
+object_path message::read_object_path() const {
+    char *s;
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<object_path>::signature_nt.data(), &s);
+    return s;
+}
+
+signature message::read_signature() const {
+    char *s;
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<signature>::signature_nt.data(), &s);
     return s;
 }
 

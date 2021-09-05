@@ -7,7 +7,7 @@
 
 #include "interface.h"
 #include "message.h"
-#include "signature.h"
+#include "type.h"
 #include "vtable.h"
 #include "error.h"
 
@@ -25,11 +25,11 @@ struct method<F> {
     // using out_type = OUT;
 
     // const char *const *{"i", "t", "as"}
-    static constexpr auto in_arr = signature_nt_arr<IN...>.data();
+    // static constexpr auto in_arr = signature_nt_arr<IN...>.data();
 
     // std::string_view{"as"}
-    static constexpr auto out_str = std::string_view(signature<OUT>.cbegin(),
-                                                     signature<OUT>.size());
+    // static constexpr auto out_str = std::string_view(signature<OUT>.cbegin(),
+    //                                                  signature<OUT>.size());
 
     static vtable::method get_vtable() {
         // std::vector<std::string> in_signatures;
@@ -45,9 +45,9 @@ struct method<F> {
         //}
 
         return {
-            .in_signatures = signature_nt<IN...>.data(),
+            .in_signatures = types<IN...>::signature_nt.data(),
             .in_names = {},
-            .out_signatures = signature_nt<OUT>.data(),
+            .out_signatures = type<OUT>::signature_nt.data(),
             .out_names = {},
             .invoker = &method::invoke,
             .flags = 0,

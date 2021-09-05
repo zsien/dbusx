@@ -4,6 +4,8 @@ libdbusx_private_headers = files('''
 '''.split())
 
 libdbusx_sources = files('''
+    signature.cc
+    object_path.cc
     sdbus/bus.cc
     sdbus/bus_private.cc
     sdbus/message.cc

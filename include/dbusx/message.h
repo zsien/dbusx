@@ -5,7 +5,7 @@
 #include <string>
 
 #include "utils.h"
-#include "signature.h"
+#include "type.h"
 
 namespace dbusx {
 
@@ -49,10 +49,10 @@ public:
             //     return std::array{'h'};
         } else if constexpr (std::is_same<Type, std::string>::value) {
             return read_string();
-            //} else if constexpr (std::is_same<Type, dbus_object_path>::value) {
-            //    return std::array{'o'};
-            //} else if constexpr (std::is_same<Type, dbus_signature>::value) {
-            //    return std::array{'g'};
+        } else if constexpr (std::is_same<Type, object_path>::value) {
+            return read_object_path();
+        } else if constexpr (std::is_same<Type, signature>::value) {
+            return read_signature();
         } else {
             static_assert(always_false_v<Type>, "unsupported type");
         }
@@ -76,7 +76,7 @@ public:
 
     type get_type() const;
 
-    uint8_t read_byte() const;
+    char read_byte() const;
     bool read_bool() const;
     int16_t read_int16() const;
     uint16_t read_uint16() const;
@@ -86,14 +86,14 @@ public:
     uint64_t read_uint64() const;
     double read_double() const;
     std::string read_string() const;
-    std::string read_object_path() const;
-    std::string read_signature() const;
+    object_path read_object_path() const;
+    signature read_signature() const;
     int read_fd() const;
 
     template <typename... T>
     bool append(T &...a) {
         if constexpr (all_pod<T...>::value) {
-            return c_append(signature_nt<T...>.data(), a...);
+            return c_append(types<T...>::signature_nt.data(), a...);
         }
     }
 
