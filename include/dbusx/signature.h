@@ -11,6 +11,8 @@ class signature {
 public:
     signature(const char *s);
 
+    const char *c_str() const { return str_.c_str(); }
+
 protected:
     std::string str_;
 };

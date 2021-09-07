@@ -161,6 +161,60 @@ int message::read_fd() const {
     return fcntl(fd, F_DUPFD_CLOEXEC, 3);
 }
 
+bool message::append_byte(char y) {
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<char>::signature_nt.data(), y);
+}
+
+bool message::append_bool(bool b) {
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<bool>::signature_nt.data(), b);
+}
+
+bool message::append_int16(int16_t n) {
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<int16_t>::signature_nt.data(), n);
+}
+
+bool message::append_uint16(uint16_t q) {
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<uint16_t>::signature_nt.data(), q);
+}
+
+bool message::append_int32(int32_t i) {
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<int32_t>::signature_nt.data(), i);
+}
+
+bool message::append_uint32(uint32_t u) {
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<uint32_t>::signature_nt.data(), u);
+}
+
+bool message::append_int64(int64_t x) {
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<int64_t>::signature_nt.data(), x);
+}
+
+bool message::append_uint64(uint64_t t) {
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<uint64_t>::signature_nt.data(), t);
+}
+
+bool message::append_double(double d) {
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<double>::signature_nt.data(), d);
+}
+
+bool message::append_string(const std::string &s) {
+    return sd_bus_message_append(d_ptr_->message_,
+                                 dbusx::type<std::string>::signature_nt.data(),
+                                 s.c_str());
+}
+
+bool message::append_object_path(const object_path &o) {
+    return sd_bus_message_append(d_ptr_->message_,
+                                 dbusx::type<object_path>::signature_nt.data(),
+                                 o.c_str());
+}
+
+bool message::append_signature(const signature &g) {
+    return sd_bus_message_append(d_ptr_->message_,
+                                 dbusx::type<signature>::signature_nt.data(),
+                                 g.c_str());
+}
+
 bool message::c_append(const char *signature, ...) {
     va_list ap;
     va_start(ap, signature);

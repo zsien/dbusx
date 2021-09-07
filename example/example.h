@@ -9,6 +9,7 @@ public:
 
     uint32_t string_length(const std::string &str);
     int32_t always_error(int32_t);
+    std::string echo(const std::string &str);
 
     virtual std::string interface_name() override;
     virtual dbusx::vtable::vtable exported() override;

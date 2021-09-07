@@ -11,6 +11,8 @@ public:
 
     bool is_valid() const;
 
+    const char *c_str() const { return str_.c_str(); }
+
 protected:
     std::string str_;
 };

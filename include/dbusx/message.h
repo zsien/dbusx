@@ -58,6 +58,51 @@ public:
         }
     }
 
+    template <typename T>
+    bool append(T &a) {
+        using Type = std::remove_cvref_t<T>;
+
+        if constexpr (std::is_same<Type, char>::value) {
+            return append_byte(a);
+        } else if constexpr (std::is_same<Type, bool>::value) {
+            return append_bool(a);
+        } else if constexpr (std::is_same<Type, int16_t>::value) {
+            return append_int16(a);
+        } else if constexpr (std::is_same<Type, uint16_t>::value) {
+            return append_uint16(a);
+        } else if constexpr (std::is_same<Type, int32_t>::value) {
+            return append_int32(a);
+        } else if constexpr (std::is_same<Type, uint32_t>::value) {
+            return append_uint32(a);
+        } else if constexpr (std::is_same<Type, int64_t>::value) {
+            return append_int64(a);
+        } else if constexpr (std::is_same<Type, uint64_t>::value) {
+            return append_uint64(a);
+        } else if constexpr (std::is_same<Type, double>::value) {
+            return append_double(a);
+            // todo: UNIX_FD
+            // } else if constexpr () {
+            //     return std::array{'h'};
+        } else if constexpr (std::is_same<Type, std::string>::value) {
+            return append_string(std::move(a));
+        } else if constexpr (std::is_same<Type, object_path>::value) {
+            return append_object_path(std::move(a));
+        } else if constexpr (std::is_same<Type, signature>::value) {
+            return append_signature(std::move(a));
+        } else {
+            static_assert(always_false_v<Type>, "unsupported type");
+        }
+    }
+
+    template <typename... T>
+    bool append(T &...a) {
+        if constexpr (all_pod<T...>::value) {
+            return c_append(types<T...>::signature_nt.data(), std::forward(a)...);
+        }
+
+        return (... && append(std::forward(a)));
+    }
+
     message();
     explicit message(std::unique_ptr<message_private> &&ptr);
     ~message();
@@ -90,12 +135,18 @@ public:
     signature read_signature() const;
     int read_fd() const;
 
-    template <typename... T>
-    bool append(T &...a) {
-        if constexpr (all_pod<T...>::value) {
-            return c_append(types<T...>::signature_nt.data(), a...);
-        }
-    }
+    bool append_byte(char y);
+    bool append_bool(bool b);
+    bool append_int16(int16_t n);
+    bool append_uint16(uint16_t q);
+    bool append_int32(int32_t i);
+    bool append_uint32(uint32_t u);
+    bool append_int64(int64_t x);
+    bool append_uint64(uint64_t t);
+    bool append_double(double d);
+    bool append_string(const std::string &s);
+    bool append_object_path(const object_path &o);
+    bool append_signature(const signature &g);
 
     bool c_append(const char *signature, ...);
 
