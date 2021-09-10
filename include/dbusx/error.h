@@ -8,6 +8,7 @@ namespace dbusx {
 
 class error : public std::exception {
     friend class message;
+    friend class bus_private;
 
 public:
     error(const std::string &name, const std::string &message)

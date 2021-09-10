@@ -13,6 +13,8 @@ class message;
 namespace vtable {
 
 using method_invoker = void (*)(interface *, const message &);
+using property_getter = void (*)(interface *, message &);
+using property_setter = void (*)(interface *, message &);
 
 enum class type { property, method, signal };
 
@@ -27,6 +29,8 @@ struct method {
 
 struct property {
     const char *signature;
+    property_getter getter;
+    property_setter setter;
     uint64_t flags;
 };
 
@@ -37,8 +41,8 @@ struct signal {
 };
 
 struct vtable {
-    std::unordered_map<std::string, method> methods;
-    std::unordered_map<std::string, property> properties;
+    std::unordered_map<const char *, method> methods;
+    std::unordered_map<const char *, property> properties;
     std::unordered_map<std::string, signal> signals;
 };
 
