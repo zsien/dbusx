@@ -17,7 +17,13 @@ namespace dbusx {
 
 struct __attribute__((visibility("hidden"))) userdata {
     interface *i;
-    void (*invoker)(interface *, const message &);
+    union {
+        vtable::method_invoker invoke;  // method invoker or property setter
+        struct {
+            vtable::property_getter get;
+            vtable::property_setter set;
+        } property;
+    } caller;
 };
 
 struct __attribute__((visibility("hidden"))) data {
@@ -36,6 +42,13 @@ private:
 
     static int on_method_call(sd_bus_message *m, void *userdata, sd_bus_error *error);
     static int on_property_get(sd_bus *bus,
+                               const char *path,
+                               const char *interface,
+                               const char *property,
+                               sd_bus_message *reply,
+                               void *userdata,
+                               sd_bus_error *ret_error);
+    static int on_property_set(sd_bus *bus,
                                const char *path,
                                const char *interface,
                                const char *property,

@@ -11,6 +11,9 @@ public:
     int32_t always_error(int32_t);
     std::string echo(const std::string &str);
 
+    std::string get_read_only_propery();
+    std::string get_read_only_propery_error();
+
     virtual std::string interface_name() override;
     virtual dbusx::vtable::vtable exported() override;
 };

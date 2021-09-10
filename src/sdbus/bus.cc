@@ -59,8 +59,8 @@ bool bus::export_interface(const std::string &path, const std::string &iface, in
 
     auto d = std::make_unique<data>();
 
-    d->ud.reserve(exported.methods.size() +      // methods
-                  exported.properties.size() * 2 // properties getter + setter
+    d->ud.reserve(exported.methods.size() +  // methods
+                  exported.properties.size() // properties
     );
 
     d->vtable.reserve(1 +                          // start
@@ -72,24 +72,54 @@ bool bus::export_interface(const std::string &path, const std::string &iface, in
 
     d->vtable.push_back(SD_BUS_VTABLE_START(0));
 
+    size_t current_offset = 0;
     for (const auto &i : exported.methods) {
-        auto current_offset = d->ud.size() * sizeof(userdata);
-
         d->ud.emplace_back(userdata{
             .i = obj,
-            .invoker = i.second.invoker,
+            .caller = {
+                .invoke = i.second.invoker,
+            },
         });
 
-        d->vtable.push_back(SD_BUS_METHOD_WITH_OFFSET(i.first.c_str(),
+        d->vtable.push_back(SD_BUS_METHOD_WITH_OFFSET(i.first,
                                                       i.second.in_signatures,
                                                       i.second.out_signatures,
                                                       &bus_private::on_method_call,
                                                       current_offset,
                                                       SD_BUS_VTABLE_UNPRIVILEGED));
+
+        current_offset += sizeof(userdata);
     }
 
-    // for (const auto &i : exported.properties) {
-    // }
+    for (const auto &i : exported.properties) {
+        d->ud.emplace_back(userdata{
+            .i = obj,
+            .caller = {
+                .property = {
+                    .get = i.second.getter,
+                    .set = i.second.setter,
+                },
+            },
+            //.invoker2 = (vtable::method_invoker)this,
+        });
+
+        if (i.second.setter == nullptr) {
+            d->vtable.push_back(SD_BUS_PROPERTY(i.first,
+                                                i.second.signature,
+                                                &bus_private::on_property_get,
+                                                current_offset,
+                                                SD_BUS_VTABLE_PROPERTY_CONST));
+        } else {
+            d->vtable.push_back(SD_BUS_WRITABLE_PROPERTY(i.first,
+                                                         i.second.signature,
+                                                         &bus_private::on_property_get,
+                                                         &bus_private::on_property_set,
+                                                         current_offset,
+                                                         SD_BUS_VTABLE_PROPERTY_CONST));
+        }
+
+        current_offset += sizeof(userdata);
+    }
 
     // for (const auto &i : exported.signals) {
     // }

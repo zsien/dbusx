@@ -1,6 +1,7 @@
 #include "example.h"
 
 #include <dbusx/method.h>
+#include <dbusx/property.h>
 #include <dbusx/error.h>
 
 example::example() {
@@ -22,6 +23,14 @@ std::string example::interface_name() {
     return "cn.zsien.dbusx.example.control";
 }
 
+std::string example::get_read_only_propery() {
+    return "read only !!!";
+}
+
+std::string example::get_read_only_propery_error() {
+    throw dbusx::error("org.freedesktop.DBus.Error.FileNotFound", "can't read");
+}
+
 dbusx::vtable::vtable example::exported() {
     return {
         .methods =
@@ -30,7 +39,12 @@ dbusx::vtable::vtable example::exported() {
                 {"alwaysError", dbusx::method<&example::always_error>::get_vtable()},
                 {"echo", dbusx::method<&example::echo>::get_vtable()},
             },
-        .properties = {},
+        .properties = {
+            {
+                {"readOnlyProperty", dbusx::property<&example::get_read_only_propery>::get_vtable()},
+                {"readOnlyPropertyError", dbusx::property<&example::get_read_only_propery_error>::get_vtable()},
+            },
+        },
         .signals = {},
     };
 }
