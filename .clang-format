@@ -2,7 +2,7 @@
 Language: Cpp
 BasedOnStyle: LLVM
 
-ColumnLimit: 100
+ColumnLimit: 120
 SortIncludes: false
 
 IndentWidth: 4
@@ -19,7 +19,8 @@ AllowShortFunctionsOnASingleLine: InlineOnly
 BinPackArguments: false
 BinPackParameters: false
 
-PenaltyBreakAssignment: 1000
+PenaltyBreakAssignment: 200
+PenaltyBreakBeforeFirstCallParameter: 200
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
