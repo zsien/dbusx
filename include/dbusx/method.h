@@ -17,33 +17,7 @@ template <auto F>
 struct method;
 template <typename C, typename OUT, typename... IN, OUT (C::*F)(/*Context,*/ IN...)>
 struct method<F> {
-    static constexpr auto in_cnt = sizeof...(IN);
-
-    template <int N>
-    using in_type = std::tuple_element_t<N, std::tuple<IN...>>;
-
-    // using out_type = OUT;
-
-    // const char *const *{"i", "t", "as"}
-    // static constexpr auto in_arr = signature_nt_arr<IN...>.data();
-
-    // std::string_view{"as"}
-    // static constexpr auto out_str = std::string_view(signature<OUT>.cbegin(),
-    //                                                  signature<OUT>.size());
-
     static vtable::method get_vtable() {
-        // std::vector<std::string> in_signatures;
-        // in_signatures.reserve(in_cnt);
-        // for (const auto &i : in_arr) {
-        //    in_signatures.emplace_back(i);
-        //}
-
-        // std::vector<std::string> out_signatures;
-        // out_signatures.reserve(out_cnt);
-        // for (const auto &i : out_arr) {
-        //    out_signatures.emplace_back(i);
-        //}
-
         return {
             .in_signatures = types<IN...>::signature_nt.data(),
             .in_names = {},
