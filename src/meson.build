@@ -16,7 +16,7 @@ libdbusx = library(
     'dbusx',
     sources: libdbusx_sources,
     include_directories: includes,
-    dependencies: [libsystemd],
+    dependencies: [libsystemd, tl_expected],
     version: '0.0.1',
     soversion: '0',
     install: true,

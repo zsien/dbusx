@@ -6,7 +6,10 @@
 #include <unordered_map>
 #include <tuple>
 #include <array>
+#include <optional>
 #include <utility>
+
+#include <tl/expected.hpp>
 
 #define check(x)                                                                                   \
     ({                                                                                             \
@@ -36,6 +39,22 @@ struct is_tuple : public std::false_type {};
 
 template <typename... T>
 struct is_tuple<std::tuple<T...>> : public std::true_type {};
+
+template <typename T>
+struct is_optional : public std::false_type {};
+
+template <typename T>
+struct is_optional<std::optional<T>> : public std::true_type {};
+
+template <typename T>
+struct expected_type {
+    using type = T;
+};
+
+template<typename T, typename E>
+struct expected_type<tl::expected<T, E>> {
+    using type = T;
+};
 
 // Expansion pack
 template <std::size_t N1, std::size_t... I1, std::size_t N2, std::size_t... I2>

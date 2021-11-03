@@ -1,6 +1,10 @@
 #ifndef DBUSX_PROPERTY_H
 #define DBUSX_PROPERTY_H
 
+#include <optional>
+
+#include <tl/expected.hpp>
+
 #include "vtable.h"
 #include "interface.h"
 #include "message.h"
@@ -8,42 +12,72 @@
 
 namespace dbusx {
 
-template <auto ...>
+template <auto...>
 struct property;
 
-template <typename C, typename TYPE, TYPE (C::*GETTER)()>
+template <typename C, typename RET, RET (C::*GETTER)()>
 struct property<GETTER> {
     static vtable::property get_vtable() {
         return {
-            .signature = types<TYPE>::signature_nt.data(),
+            .signature = type<typename expected_type<RET>::type>::signature_nt.data(),
             .getter = get,
             .setter = nullptr,
             .flags = 0,
         };
     }
 
-    static void get(interface *o, message &m) {
+    static std::optional<error> get(interface *o, message &m) {
         C *obj = reinterpret_cast<C *>(o);
-        TYPE r = (obj->*GETTER)();
+        RET r = (obj->*GETTER)();
 
-        m.append(r);
+        if constexpr (tl::detail::is_expected<RET>::value) {
+            if (r) {
+                m.append(r.value());
+            } else {
+                return r.error();
+            }
+        } else {
+            m.append(r);
+        }
+
+        return std::nullopt;
     }
 };
 
-template <typename C, typename TYPE, TYPE (C::*GETTER)(), void (C::*SETTER)(const TYPE &)>
+template <typename C,
+          typename RET,
+          typename SETTER_RET,
+          RET (C::*GETTER)(),
+          SETTER_RET (C::*SETTER)(const RET &)>
 struct property<GETTER, SETTER> : public property<GETTER> {
     static vtable::property get_vtable() {
         return {
-            .signature = types<TYPE>::signature_nt.data(),
+            .signature = type<typename expected_type<RET>::type>::signature_nt.data(),
             .getter = property<GETTER>::get,
             .setter = set,
             .flags = 0,
         };
     }
 
-    static void set(interface *o, message &m) {
+    static std::optional<error> set(interface *o, message &m) {
         C *obj = reinterpret_cast<C *>(o);
-        (obj->*SETTER)(m.read<TYPE>());
+
+        // constexpr if won't do any short circuit logic
+        if constexpr (is_optional<SETTER_RET>::value) {
+            if constexpr (std::is_same<typename SETTER_RET::value_type, error>::value) {
+                return (obj->*SETTER)(m.read<RET>());
+            } else {
+                static_assert(always_false_v<RET>, "unsupported type");
+            }
+        } else if constexpr (std::is_same<SETTER_RET, void>::value) {
+            (obj->*SETTER)(m.read<RET>());
+
+            return std::nullopt;
+        } else {
+            static_assert(always_false_v<RET>, "unsupported type");
+        }
+
+        return std::nullopt;
     }
 };
 

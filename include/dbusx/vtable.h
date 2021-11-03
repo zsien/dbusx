@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <optional>
+
+#include "error.h"
 
 namespace dbusx {
 
@@ -13,8 +16,8 @@ class message;
 namespace vtable {
 
 using method_invoker = void (*)(interface *, const message &);
-using property_getter = void (*)(interface *, message &);
-using property_setter = void (*)(interface *, message &);
+using property_getter = std::optional<error> (*)(interface *, message &);
+using property_setter = std::optional<error> (*)(interface *, message &);
 
 enum class type { property, method, signal };
 

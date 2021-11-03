@@ -8,6 +8,7 @@ project(
 )
 
 libsystemd = dependency('libsystemd', required: true)
+tl_expected = dependency('tl-expected', method: 'cmake', modules: ['tl::expected'], required: true)
 
 includes = include_directories('include')
 
