@@ -55,12 +55,12 @@ struct type {
             return std::array{'g'};
         } else if constexpr (is_vector<T1>::value) {
             // array
-            return concat(std::array{'a'}, type<typename T1::value_type>::s);
+            return concat(std::array{'a'}, type<typename T1::value_type>::signature);
         } else if constexpr (is_unordered_map<T1>::value) {
             // dict
             return concat(std::array{'{'},
-                          type<typename T1::key_type>::s,
-                          type<typename T1::mapped_type>::s,
+                          type<typename T1::key_type>::signature,
+                          type<typename T1::mapped_type>::signature,
                           std::array{'}'});
         } else if constexpr (is_tuple<T1>::value) {
             // struct

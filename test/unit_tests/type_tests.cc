@@ -64,3 +64,42 @@ TEST(type_tests, test_type_signature) {
     ASSERT_THAT(type<signature>::signature, testing::ElementsAreArray({'g'}));
     ASSERT_THAT(type<signature>::signature_nt, testing::ElementsAreArray("g"));
 }
+
+TEST(type_tests, test_type_array) {
+    ASSERT_THAT(type<std::vector<std::string>>::signature, testing::ElementsAreArray({'a', 's'}));
+    ASSERT_THAT(type<std::vector<std::string>>::signature_nt, testing::ElementsAreArray("as"));
+}
+
+TEST(type_tests, test_type_map) {
+    ASSERT_THAT((type<std::unordered_map<std::string, std::string>>::signature),
+                testing::ElementsAreArray({'{', 's', 's', '}'}));
+    ASSERT_THAT((type<std::unordered_map<std::string, std::string>>::signature_nt),
+                testing::ElementsAreArray("{ss}"));
+}
+
+TEST(type_tests, test_type_struct) {
+    ASSERT_THAT(type<std::tuple<std::string>>::signature,
+                testing::ElementsAreArray({'(', 's', ')'}));
+    ASSERT_THAT(type<std::tuple<std::string>>::signature_nt, testing::ElementsAreArray("(s)"));
+
+    ASSERT_THAT((type<std::tuple<std::string, uint32_t>>::signature),
+                testing::ElementsAreArray({'(', 's', 'u', ')'}));
+    ASSERT_THAT((type<std::tuple<std::string, uint32_t>>::signature_nt),
+                testing::ElementsAreArray("(su)"));
+}
+
+TEST(type_tests, test_type_mixed_container) {
+    ASSERT_THAT(
+        (type<std::vector<std::unordered_map<std::string, std::tuple<uint32_t, std::string>>>>::
+             signature),
+        testing::ElementsAreArray({'a', '{', 's', '(', 'u', 's', ')', '}'}));
+    ASSERT_THAT(
+        (type<std::vector<std::unordered_map<std::string, std::tuple<uint32_t, std::string>>>>::
+             signature_nt),
+        testing::ElementsAreArray("a{s(us)}"));
+
+    ASSERT_THAT((type<std::unordered_map<std::string, std::vector<uint32_t>>>::signature),
+                testing::ElementsAreArray({'{', 's', 'a', 'u', '}'}));
+    ASSERT_THAT((type<std::unordered_map<std::string, std::vector<uint32_t>>>::signature_nt),
+                testing::ElementsAreArray("{sau}"));
+}
