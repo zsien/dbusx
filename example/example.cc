@@ -61,15 +61,13 @@ dbusx::vtable::vtable example::exported() {
             },
         .properties =
             {
-                {{"readOnlyProperty",
-                  dbusx::property<&example::get_read_only_propery>::get_vtable()},
-                 {"readOnlyPropertyE",
-                  dbusx::property<&example::get_read_only_propery_e>::get_vtable()},
-                 {
-                     "writableProperty",
-                     dbusx::property<&example::get_writable_propery,
-                                     &example::set_writable_propery>::get_vtable(),
-                 }},
+                {"readOnlyProperty",
+                 dbusx::property<&example::get_read_only_propery>::get_vtable()},
+                {"readOnlyPropertyE",
+                 dbusx::property<&example::get_read_only_propery_e>::get_vtable()},
+                {"writableProperty",
+                 dbusx::property<&example::get_writable_propery,
+                                 &example::set_writable_propery>::get_vtable()},
             },
         .signals = {},
     };
