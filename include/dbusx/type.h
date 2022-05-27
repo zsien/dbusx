@@ -21,6 +21,10 @@ template <typename T>
 struct tuple_type {};
 } // namespace
 
+
+/*!
+  @brief Get D-Bus signature string from a C++ type
+ */
 template <typename T>
 struct type {
     static constexpr auto signature = std::invoke([] {
@@ -76,6 +80,9 @@ struct type {
     static constexpr auto signature_nt = concat(signature, std::array{'\0'});
 };
 
+/*!
+  @brief Get D-Bus signature string from C++ types
+ */
 template <typename... T>
 struct types {
     static constexpr auto signature = concat(type<T>::signature...);

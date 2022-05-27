@@ -46,6 +46,7 @@ struct is_optional : public std::false_type {};
 template <typename T>
 struct is_optional<std::optional<T>> : public std::true_type {};
 
+// get the expected type from expected
 template <typename T>
 struct expected_type {
     using type = T;
@@ -56,7 +57,7 @@ struct expected_type<tl::expected<T, E>> {
     using type = T;
 };
 
-// Expansion pack
+// expansion pack
 template <std::size_t N1, std::size_t... I1, std::size_t N2, std::size_t... I2>
 static constexpr std::array<char, N1 + N2> concat(const std::array<char, N1> &a1,
                                                   const std::array<char, N2> &a2,
@@ -78,6 +79,8 @@ static constexpr auto concat(const std::array<char, N1> &a1,
                   as...);
 }
 
+
+// determine if they're POD type
 template <typename... T>
 struct all_pod;
 

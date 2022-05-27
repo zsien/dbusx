@@ -13,6 +13,9 @@ class message_private;
 
 class error;
 
+/*!
+  @brief DBus message
+ */
 class message {
 public:
     enum class type {

@@ -17,6 +17,11 @@ namespace dbusx {
 template <auto F>
 struct method;
 
+/*!
+  @brief A wrapper to generate a vtable item of method
+  
+  @tparam F method pointer, it should be a member function of current interface
+ */
 template <typename C, typename OUT, typename... IN, OUT (C::*F)(/*Context,*/ IN...)>
 struct method<F> {
     static vtable::method get_vtable() {

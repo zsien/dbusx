@@ -15,6 +15,13 @@ namespace dbusx {
 template <auto...>
 struct property;
 
+/*!
+  @brief a wrapper to generate a vtable item of readonly property
+
+  @tparam GETTER property getter method, signature:
+          \code PROP_TYPE (CLASS::*)() \endcode or
+          \code tl::expected<PROP_TYPE, dbusx::error> (CLASS::*)() \endcode
+*/
 template <typename C, typename RET, RET (C::*GETTER)()>
 struct property<GETTER> {
     static vtable::property get_vtable() {
@@ -44,6 +51,16 @@ struct property<GETTER> {
     }
 };
 
+/*!
+  @brief A wrapper to generate a vtable item of writable property
+
+  @tparam GETTER property getter method, signature:
+          \code PROP_TYPE (CLASS::*)() \endcode or
+          \code tl::expected<PROP_TYPE, dbusx::error> (CLASS::*)() \endcode
+  @tparam SETTER property setter method, signature:
+          \code void (CLASS::*)(PROP_TYPE value) \endcode or
+          \code std::optional<dbusx::error> (CLASS::*)(PROP_TYPE value) \endcode
+ */
 template <typename C,
           typename RET,
           typename SETTER_RET,

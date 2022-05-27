@@ -9,6 +9,9 @@ namespace vtable {
 struct vtable;
 }
 
+/*!
+  @brief Base for all D-Bus interface
+ */
 class interface {
 public:
     virtual ~interface() = default;

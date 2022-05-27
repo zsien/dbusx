@@ -6,7 +6,7 @@
 
 namespace dbusx {
 
-class error : public std::exception {
+class error {
     friend class message;
     friend class bus_private;
 
@@ -14,8 +14,6 @@ public:
     error(const std::string &name, const std::string &message)
         : name_(name)
         , message_(message) {}
-
-    const char *what() const noexcept override { return message_.c_str(); }
 
 private:
     const std::string name_;
