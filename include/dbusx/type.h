@@ -11,8 +11,7 @@
 #include <vector>
 
 #include "utils.h"
-#include "object_path.h"
-#include "signature.h"
+#include "typedef.h"
 
 namespace dbusx {
 
@@ -21,59 +20,57 @@ template <typename T>
 struct tuple_type {};
 } // namespace
 
-
 /*!
   @brief Get D-Bus signature string from a C++ type
  */
 template <typename T>
 struct type {
     static constexpr auto signature = std::invoke([] {
-        using T1 = std::remove_cvref_t<T>;
+        using Type = std::remove_cvref_t<T>;
 
-        if constexpr (std::is_same<T1, char>::value) {
+        if constexpr (std::is_same<Type, char>::value) {
             return std::array{'y'};
-        } else if constexpr (std::is_same<T1, bool>::value) {
+        } else if constexpr (std::is_same<Type, bool>::value) {
             return std::array{'b'};
-        } else if constexpr (std::is_same<T1, int16_t>::value) {
+        } else if constexpr (std::is_same<Type, int16_t>::value) {
             return std::array{'n'};
-        } else if constexpr (std::is_same<T1, uint16_t>::value) {
+        } else if constexpr (std::is_same<Type, uint16_t>::value) {
             return std::array{'q'};
-        } else if constexpr (std::is_same<T1, int32_t>::value) {
+        } else if constexpr (std::is_same<Type, int32_t>::value) {
             return std::array{'i'};
-        } else if constexpr (std::is_same<T1, uint32_t>::value) {
+        } else if constexpr (std::is_same<Type, uint32_t>::value) {
             return std::array{'u'};
-        } else if constexpr (std::is_same<T1, int64_t>::value) {
+        } else if constexpr (std::is_same<Type, int64_t>::value) {
             return std::array{'x'};
-        } else if constexpr (std::is_same<T1, uint64_t>::value) {
+        } else if constexpr (std::is_same<Type, uint64_t>::value) {
             return std::array{'t'};
-        } else if constexpr (std::is_same<T1, double>::value) {
+        } else if constexpr (std::is_same<Type, double>::value) {
             return std::array{'d'};
-            // todo: UNIX_FD
-            // } else if constexpr () {
-            //     return std::array{'h'};
-        } else if constexpr (std::is_same<T1, std::string>::value) {
+        } else if constexpr (std::is_same<Type, fd>::value) {
+            return std::array{'h'};
+        } else if constexpr (std::is_same<Type, std::string>::value) {
             return std::array{'s'};
-        } else if constexpr (std::is_same<T1, object_path>::value) {
+        } else if constexpr (std::is_same<Type, object_path>::value) {
             return std::array{'o'};
-        } else if constexpr (std::is_same<T1, dbusx::signature>::value) {
+        } else if constexpr (std::is_same<Type, dbusx::signature>::value) {
             return std::array{'g'};
-        } else if constexpr (is_vector<T1>::value) {
+        } else if constexpr (is_vector<Type>::value) {
             // array
-            return concat(std::array{'a'}, type<typename T1::value_type>::signature);
-        } else if constexpr (is_unordered_map<T1>::value) {
+            return concat(std::array{'a'}, type<typename Type::value_type>::signature);
+        } else if constexpr (is_unordered_map<Type>::value) {
             // dict
             return concat(std::array{'{'},
-                          type<typename T1::key_type>::signature,
-                          type<typename T1::mapped_type>::signature,
+                          type<typename Type::key_type>::signature,
+                          type<typename Type::mapped_type>::signature,
                           std::array{'}'});
-        } else if constexpr (is_tuple<T1>::value) {
+        } else if constexpr (is_tuple<Type>::value) {
             // struct
             // top-level cv-qualifiers and reference removed
-            return tuple_type<T1>::signature;
-        } else if constexpr (std::is_same<T1, std::any>::value) {
+            return tuple_type<Type>::signature;
+        } else if constexpr (std::is_same<Type, std::any>::value) {
             return std::array{'v'};
         } else {
-            static_assert(always_false_v<T1>, "unsupported type");
+            static_assert(always_false_v<Type>, "unsupported type");
         }
     });
 

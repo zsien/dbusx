@@ -4,7 +4,9 @@ libdbusx_public_headers = files('''
     dbusx/interface.h
     dbusx/message.h
     dbusx/method.h
-    dbusx/signature.h
+    dbusx/property.h
+    dbusx/type.h
+    dbusx/typedef.h
     dbusx/utils.h
     dbusx/vtable.h
 '''.split())

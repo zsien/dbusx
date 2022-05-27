@@ -146,19 +146,19 @@ std::string message::read_string() const {
 object_path message::read_object_path() const {
     char *s;
     sd_bus_message_read(d_ptr_->message_, dbusx::type<object_path>::signature_nt.data(), &s);
-    return s;
+    return object_path(s);
 }
 
 signature message::read_signature() const {
     char *s;
     sd_bus_message_read(d_ptr_->message_, dbusx::type<signature>::signature_nt.data(), &s);
-    return s;
+    return signature(s);
 }
 
-int message::read_fd() const {
-    int fd;
-    sd_bus_message_read(d_ptr_->message_, "h", &fd);
-    return fcntl(fd, F_DUPFD_CLOEXEC, 3);
+fd message::read_fd() const {
+    int f;
+    sd_bus_message_read(d_ptr_->message_, "h", &f);
+    return fd(fcntl(f, F_DUPFD_CLOEXEC, 3));
 }
 
 bool message::append_byte(char y) {
@@ -197,6 +197,10 @@ bool message::append_double(double d) {
     return sd_bus_message_append(d_ptr_->message_, dbusx::type<double>::signature_nt.data(), d);
 }
 
+bool message::append_fd(fd f) {
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<fd>::signature_nt.data(), int(f));
+}
+
 bool message::append_string(const std::string &s) {
     return sd_bus_message_append(d_ptr_->message_,
                                  dbusx::type<std::string>::signature_nt.data(),
@@ -206,13 +210,13 @@ bool message::append_string(const std::string &s) {
 bool message::append_object_path(const object_path &o) {
     return sd_bus_message_append(d_ptr_->message_,
                                  dbusx::type<object_path>::signature_nt.data(),
-                                 o.c_str());
+                                 std::string(o).c_str());
 }
 
 bool message::append_signature(const signature &g) {
     return sd_bus_message_append(d_ptr_->message_,
                                  dbusx::type<signature>::signature_nt.data(),
-                                 g.c_str());
+                                 std::string(g).c_str());
 }
 
 bool message::c_append(const char *signature, ...) {

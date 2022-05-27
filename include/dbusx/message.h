@@ -5,6 +5,7 @@
 #include <string>
 
 #include "utils.h"
+#include "typedef.h"
 #include "type.h"
 
 namespace dbusx {
@@ -47,9 +48,8 @@ public:
             return read_uint64();
         } else if constexpr (std::is_same<Type, double>::value) {
             return read_double();
-            // todo: UNIX_FD
-            // } else if constexpr () {
-            //     return std::array{'h'};
+        } else if constexpr (std::is_same<Type, fd>::value) {
+            return read_fd();
         } else if constexpr (std::is_same<Type, std::string>::value) {
             return read_string();
         } else if constexpr (std::is_same<Type, object_path>::value) {
@@ -62,36 +62,35 @@ public:
     }
 
     template <typename T>
-    bool append(T &a) {
+    bool append(T &v) {
         using Type = std::remove_cvref_t<T>;
 
         if constexpr (std::is_same<Type, char>::value) {
-            return append_byte(a);
+            return append_byte(v);
         } else if constexpr (std::is_same<Type, bool>::value) {
-            return append_bool(a);
+            return append_bool(v);
         } else if constexpr (std::is_same<Type, int16_t>::value) {
-            return append_int16(a);
+            return append_int16(v);
         } else if constexpr (std::is_same<Type, uint16_t>::value) {
-            return append_uint16(a);
+            return append_uint16(v);
         } else if constexpr (std::is_same<Type, int32_t>::value) {
-            return append_int32(a);
+            return append_int32(v);
         } else if constexpr (std::is_same<Type, uint32_t>::value) {
-            return append_uint32(a);
+            return append_uint32(v);
         } else if constexpr (std::is_same<Type, int64_t>::value) {
-            return append_int64(a);
+            return append_int64(v);
         } else if constexpr (std::is_same<Type, uint64_t>::value) {
-            return append_uint64(a);
+            return append_uint64(v);
         } else if constexpr (std::is_same<Type, double>::value) {
-            return append_double(a);
-            // todo: UNIX_FD
-            // } else if constexpr () {
-            //     return std::array{'h'};
+            return append_double(v);
+        } else if constexpr (std::is_same<Type, fd>::value) {
+            return append_fd(v);
         } else if constexpr (std::is_same<Type, std::string>::value) {
-            return append_string(std::move(a));
+            return append_string(std::move(v));
         } else if constexpr (std::is_same<Type, object_path>::value) {
-            return append_object_path(std::move(a));
+            return append_object_path(std::move(v));
         } else if constexpr (std::is_same<Type, signature>::value) {
-            return append_signature(std::move(a));
+            return append_signature(std::move(v));
         } else {
             static_assert(always_false_v<Type>, "unsupported type");
         }
@@ -136,7 +135,7 @@ public:
     std::string read_string() const;
     object_path read_object_path() const;
     signature read_signature() const;
-    int read_fd() const;
+    fd read_fd() const;
 
     bool append_byte(char y);
     bool append_bool(bool b);
@@ -147,6 +146,7 @@ public:
     bool append_int64(int64_t x);
     bool append_uint64(uint64_t t);
     bool append_double(double d);
+    bool append_fd(fd f);
     bool append_string(const std::string &s);
     bool append_object_path(const object_path &o);
     bool append_signature(const signature &g);

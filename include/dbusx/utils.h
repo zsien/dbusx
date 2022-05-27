@@ -52,7 +52,7 @@ struct expected_type {
     using type = T;
 };
 
-template<typename T, typename E>
+template <typename T, typename E>
 struct expected_type<tl::expected<T, E>> {
     using type = T;
 };
@@ -78,7 +78,6 @@ static constexpr auto concat(const std::array<char, N1> &a1,
     return concat(concat(a1, a2, std::make_index_sequence<N1>{}, std::make_index_sequence<N2>{}),
                   as...);
 }
-
 
 // determine if they're POD type
 template <typename... T>

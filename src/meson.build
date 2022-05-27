@@ -4,8 +4,6 @@ libdbusx_private_headers = files('''
 '''.split())
 
 libdbusx_sources = files('''
-    signature.cc
-    object_path.cc
     sdbus/bus.cc
     sdbus/bus_private.cc
     sdbus/message.cc
@@ -14,7 +12,7 @@ libdbusx_sources = files('''
 
 libdbusx = library(
     'dbusx',
-    sources: libdbusx_sources,
+    sources:libdbusx_public_headers + libdbusx_private_headers + libdbusx_sources,
     include_directories: includes,
     dependencies: [libsystemd, tl_expected],
     version: '0.0.1',
