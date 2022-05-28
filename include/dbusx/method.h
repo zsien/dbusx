@@ -19,7 +19,7 @@ struct method;
 
 /*!
   @brief A wrapper to generate a vtable item of method
-  
+
   @tparam F method pointer, it should be a member function of current interface
  */
 template <typename C, typename OUT, typename... IN, OUT (C::*F)(/*Context,*/ IN...)>
@@ -37,25 +37,31 @@ struct method<F> {
 
     static void invoke(interface *o, const message &m) {
         C *obj = reinterpret_cast<C *>(o);
-        OUT r = (obj->*F)(m.read<IN>()...);
 
-        if constexpr (tl::detail::is_expected<OUT>::value) {
-            if (r) {
-                message ret = m.create_return();
-                ret.append(r.value());
-                bool a = ret.send();
-                (void)a;
+        if constexpr (std::is_void_v<OUT>) {
+            (obj->*F)(m.read<IN>()...);
+            message ret = m.create_return();
+            bool a = ret.send();
+            (void)a;
+        } else {
+            OUT r = (obj->*F)(m.read<IN>()...);
+            if constexpr (tl::detail::is_expected<OUT>::value) {
+                if (r) {
+                    message ret = m.create_return();
+                    ret.append(r.value());
+                    bool a = ret.send();
+                    (void)a;
+                } else {
+                    message ret = m.create_error(r.error());
+                    bool a = ret.send();
+                    (void)a;
+                }
             } else {
-                message ret = m.create_error(r.error());
+                message ret = m.create_return();
+                ret.append(r);
                 bool a = ret.send();
                 (void)a;
             }
-        } else {
-            message ret = m.create_return();
-            ret.append(r);
-            bool a = ret.send();
-            (void)a;
-            // m.reply(r);
         }
     }
 };

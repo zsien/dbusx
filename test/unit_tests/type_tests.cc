@@ -88,6 +88,11 @@ TEST(type_tests, test_type_struct) {
                 testing::ElementsAreArray("(su)"));
 }
 
+TEST(type_tests, test_type_void) {
+    ASSERT_THAT(type<void>::signature, testing::ElementsAreArray(std::array<char, 0>{}));
+    ASSERT_THAT(type<void>::signature_nt, testing::ElementsAreArray(""));
+}
+
 TEST(type_tests, test_type_mixed_container) {
     ASSERT_THAT(
         (type<std::vector<std::unordered_map<std::string, std::tuple<uint32_t, std::string>>>>::

@@ -11,6 +11,10 @@ uint32_t example::string_length(const std::string &str) {
     return str.length();
 }
 
+std::string example::echo(const std::string &str) {
+    return str;
+}
+
 tl::expected<std::string, dbusx::error> example::may_error(bool should) {
     if (should) {
         return tl::make_unexpected(
@@ -20,8 +24,11 @@ tl::expected<std::string, dbusx::error> example::may_error(bool should) {
     return std::string("no error~");
 }
 
-std::string example::echo(const std::string &str) {
-    return str;
+dbusx::object_path example::get_path() {
+    return dbusx::object_path("/cn/zsien/dbusx/example/path");
+}
+
+void example::no_return() {
 }
 
 std::string example::get_read_only_propery() {
@@ -50,8 +57,10 @@ dbusx::vtable::vtable example::exported() {
         .methods =
             {
                 {"StringLength", dbusx::method<&example::string_length>::get_vtable()},
-                {"MayError", dbusx::method<&example::may_error>::get_vtable()},
                 {"Echo", dbusx::method<&example::echo>::get_vtable()},
+                {"MayError", dbusx::method<&example::may_error>::get_vtable()},
+                {"GetPath", dbusx::method<&example::get_path>::get_vtable()},
+                {"NoReturn", dbusx::method<&example::no_return>::get_vtable()},
             },
         .properties =
             {

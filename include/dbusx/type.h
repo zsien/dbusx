@@ -69,6 +69,8 @@ struct type {
             return tuple_type<Type>::signature;
         } else if constexpr (std::is_same<Type, std::any>::value) {
             return std::array{'v'};
+        } else if constexpr (std::is_void<T>::value) {
+            return std::array<char, 0>{};
         } else {
             static_assert(always_false_v<Type>, "unsupported type");
         }
@@ -82,7 +84,14 @@ struct type {
  */
 template <typename... T>
 struct types {
-    static constexpr auto signature = concat(type<T>::signature...);
+    static constexpr auto signature = std::invoke([] {
+        if constexpr (sizeof...(T) == 0) {
+            return std::array<char, 0>();
+        } else {
+            return concat(type<T>::signature...);
+        }
+    });
+
     static constexpr auto signature_nt = concat(signature, std::array{'\0'});
 };
 

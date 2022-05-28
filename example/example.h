@@ -3,6 +3,7 @@
 
 #include <dbusx/interface.h>
 #include <dbusx/error.h>
+#include <dbusx/typedef.h>
 
 #include <tl/expected.hpp>
 
@@ -14,6 +15,9 @@ public:
     std::string echo(const std::string &str);
 
     tl::expected<std::string, dbusx::error> may_error(bool should);
+
+    dbusx::object_path get_path();
+    void no_return();
 
     std::string get_read_only_propery();
     tl::expected<std::string, dbusx::error> get_read_only_propery_e();
