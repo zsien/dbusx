@@ -28,7 +28,7 @@ struct method<F> {
         return {
             .in_signatures = types<IN...>::signature_nt.data(),
             .in_names = {},
-            .out_signatures = type<typename expected_type<OUT>::type>::signature_nt.data(),
+            .out_signatures = type<typename return_type<OUT>::type>::signature_nt.data(),
             .out_names = {},
             .invoker = &method::invoke,
             .flags = 0,
@@ -39,6 +39,7 @@ struct method<F> {
         C *obj = reinterpret_cast<C *>(o);
 
         if constexpr (std::is_void_v<OUT>) {
+            // no return
             (obj->*F)(m.read<IN>()...);
             message ret = m.create_return();
             bool a = ret.send();
@@ -46,9 +47,12 @@ struct method<F> {
         } else {
             OUT r = (obj->*F)(m.read<IN>()...);
             if constexpr (tl::detail::is_expected<OUT>::value) {
+                // return tl::expected
                 if (r) {
                     message ret = m.create_return();
-                    ret.append(r.value());
+                    if constexpr (!std::is_void_v<typename OUT::value_type>) {
+                        ret.append(r.value());
+                    } // else return tl::expected<void, dbusx::error>
                     bool a = ret.send();
                     (void)a;
                 } else {
@@ -57,6 +61,7 @@ struct method<F> {
                     (void)a;
                 }
             } else {
+                // return value with no error
                 message ret = m.create_return();
                 ret.append(r);
                 bool a = ret.send();

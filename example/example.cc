@@ -15,13 +15,13 @@ std::string example::echo(const std::string &str) {
     return str;
 }
 
-tl::expected<std::string, dbusx::error> example::may_error(bool should) {
-    if (should) {
+tl::expected<std::string, dbusx::error> example::may_error(bool error) {
+    if (error) {
         return tl::make_unexpected(
             dbusx::error("org.freedesktop.DBus.Error.FileNotFound", "error message"));
     }
 
-    return std::string("no error~");
+    return {"no error ~"};
 }
 
 dbusx::object_path example::get_path() {
@@ -29,6 +29,15 @@ dbusx::object_path example::get_path() {
 }
 
 void example::no_return() {
+}
+
+tl::expected<void, dbusx::error> example::no_return_or_error(bool error) {
+    if (error) {
+        return tl::make_unexpected(
+            dbusx::error("org.freedesktop.DBus.Error.FileNotFound", "error message"));
+    }
+
+    return {};
 }
 
 std::string example::get_read_only_propery() {
@@ -61,6 +70,7 @@ dbusx::vtable::vtable example::exported() {
                 {"MayError", dbusx::method<&example::may_error>::get_vtable()},
                 {"GetPath", dbusx::method<&example::get_path>::get_vtable()},
                 {"NoReturn", dbusx::method<&example::no_return>::get_vtable()},
+                {"NoReturnOrError", dbusx::method<&example::no_return_or_error>::get_vtable()},
             },
         .properties =
             {

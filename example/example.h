@@ -14,10 +14,11 @@ public:
     uint32_t string_length(const std::string &str);
     std::string echo(const std::string &str);
 
-    tl::expected<std::string, dbusx::error> may_error(bool should);
+    tl::expected<std::string, dbusx::error> may_error(bool error);
 
     dbusx::object_path get_path();
     void no_return();
+    tl::expected<void, dbusx::error> no_return_or_error(bool error);
 
     std::string get_read_only_propery();
     tl::expected<std::string, dbusx::error> get_read_only_propery_e();

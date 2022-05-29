@@ -46,14 +46,14 @@ struct is_optional : public std::false_type {};
 template <typename T>
 struct is_optional<std::optional<T>> : public std::true_type {};
 
-// get the expected type from expected
+// get return type, the expected type is returned if use expected
 template <typename T>
-struct expected_type {
+struct return_type {
     using type = T;
 };
 
 template <typename T, typename E>
-struct expected_type<tl::expected<T, E>> {
+struct return_type<tl::expected<T, E>> {
     using type = T;
 };
 
