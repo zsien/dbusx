@@ -62,7 +62,7 @@ public:
     }
 
     template <typename T>
-    bool append(T &v) {
+    bool append(T &&v) {
         using Type = std::remove_cvref_t<T>;
 
         if constexpr (std::is_same<Type, char>::value) {
@@ -86,23 +86,23 @@ public:
         } else if constexpr (std::is_same<Type, fd>::value) {
             return append_fd(v);
         } else if constexpr (std::is_same<Type, std::string>::value) {
-            return append_string(std::move(v));
+            return append_string(std::forward<T>(v));
         } else if constexpr (std::is_same<Type, object_path>::value) {
-            return append_object_path(std::move(v));
+            return append_object_path(std::forward<T>(v));
         } else if constexpr (std::is_same<Type, signature>::value) {
-            return append_signature(std::move(v));
+            return append_signature(std::forward<T>(v));
         } else {
             static_assert(always_false_v<Type>, "unsupported type");
         }
     }
 
     template <typename... T>
-    bool append(T &...a) {
+    bool append(T &&...a) {
         if constexpr (all_pod<T...>::value) {
-            return c_append(types<T...>::signature_nt.data(), std::forward(a)...);
+            return c_append(types<T...>::signature_nt.data(), a...);
         }
 
-        return (... && append(std::forward(a)));
+        return (... && append(std::forward<T>(a)));
     }
 
     message();
