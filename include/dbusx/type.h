@@ -59,7 +59,7 @@ struct type {
             return concat(std::array{'a'}, type<typename Type::value_type>::signature);
         } else if constexpr (is_unordered_map<Type>::value) {
             // dict
-            return concat(std::array{'{'},
+            return concat(std::array{'a', '{'},
                           type<typename Type::key_type>::signature,
                           type<typename Type::mapped_type>::signature,
                           std::array{'}'});

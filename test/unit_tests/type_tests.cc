@@ -72,9 +72,9 @@ TEST(type_tests, test_type_array) {
 
 TEST(type_tests, test_type_map) {
     ASSERT_THAT((type<std::unordered_map<std::string, std::string>>::signature),
-                testing::ElementsAreArray({'{', 's', 's', '}'}));
+                testing::ElementsAreArray({'a', '{', 's', 's', '}'}));
     ASSERT_THAT((type<std::unordered_map<std::string, std::string>>::signature_nt),
-                testing::ElementsAreArray("{ss}"));
+                testing::ElementsAreArray("a{ss}"));
 }
 
 TEST(type_tests, test_type_struct) {
@@ -97,14 +97,14 @@ TEST(type_tests, test_type_mixed_container) {
     ASSERT_THAT(
         (type<std::vector<std::unordered_map<std::string, std::tuple<uint32_t, std::string>>>>::
              signature),
-        testing::ElementsAreArray({'a', '{', 's', '(', 'u', 's', ')', '}'}));
+        testing::ElementsAreArray({'a', 'a', '{', 's', '(', 'u', 's', ')', '}'}));
     ASSERT_THAT(
         (type<std::vector<std::unordered_map<std::string, std::tuple<uint32_t, std::string>>>>::
              signature_nt),
-        testing::ElementsAreArray("a{s(us)}"));
+        testing::ElementsAreArray("aa{s(us)}"));
 
     ASSERT_THAT((type<std::unordered_map<std::string, std::vector<uint32_t>>>::signature),
-                testing::ElementsAreArray({'{', 's', 'a', 'u', '}'}));
+                testing::ElementsAreArray({'a', '{', 's', 'a', 'u', '}'}));
     ASSERT_THAT((type<std::unordered_map<std::string, std::vector<uint32_t>>>::signature_nt),
-                testing::ElementsAreArray("{sau}"));
+                testing::ElementsAreArray("a{sau}"));
 }
