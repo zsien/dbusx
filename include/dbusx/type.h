@@ -17,13 +17,13 @@ namespace dbusx {
 
 namespace {
 template <typename T>
-struct tuple_type {};
+struct tuple_items_type {};
 } // namespace
 
 /*!
   @brief Get D-Bus signature string from a C++ type
  */
-template <typename T>
+template <typename T, bool general_concept = false>
 struct type {
     static constexpr auto signature = std::invoke([] {
         using Type = std::remove_cvref_t<T>;
@@ -59,14 +59,24 @@ struct type {
             return concat(std::array{'a'}, type<typename Type::value_type>::signature);
         } else if constexpr (is_unordered_map<Type>::value) {
             // dict
-            return concat(std::array{'a', '{'},
-                          type<typename Type::key_type>::signature,
-                          type<typename Type::mapped_type>::signature,
-                          std::array{'}'});
+            if constexpr (general_concept) {
+                return concat(std::array{'a', 'e'},
+                              type<typename Type::key_type>::signature,
+                              type<typename Type::mapped_type>::signature);
+            } else {
+                return concat(std::array{'a', '{'},
+                              type<typename Type::key_type>::signature,
+                              type<typename Type::mapped_type>::signature,
+                              std::array{'}'});
+            }
         } else if constexpr (is_tuple<Type>::value) {
             // struct
             // top-level cv-qualifiers and reference removed
-            return tuple_type<Type>::signature;
+            if constexpr (general_concept) {
+                return concat(std::array{'r'}, tuple_items_type<Type>::signature);
+            } else {
+                return concat(std::array{'('}, tuple_items_type<Type>::signature, std::array{')'});
+            }
         } else if constexpr (std::is_same<Type, std::any>::value) {
             return std::array{'v'};
         } else if constexpr (std::is_void<T>::value) {
@@ -97,10 +107,8 @@ struct types {
 
 namespace {
 template <typename... T>
-struct tuple_type<std::tuple<T...>> {
-    static constexpr auto signature = concat(std::array{'('},
-                                             type<T>::signature...,
-                                             std::array{')'});
+struct tuple_items_type<std::tuple<T...>> {
+    static constexpr auto signature = concat(type<T>::signature...);
 };
 } // namespace
 

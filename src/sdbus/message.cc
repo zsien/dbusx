@@ -232,3 +232,25 @@ bool message::send() {
     auto *bus = sd_bus_message_get_bus(d_ptr_->message_);
     return sd_bus_send(bus, d_ptr_->message_, 0) >= 0;
 }
+
+void message::enter_container(char type, const char *contents) const {
+    sd_bus_message_enter_container(d_ptr_->message_, type, contents);
+}
+
+void message::exit_container() const {
+    sd_bus_message_exit_container(d_ptr_->message_);
+}
+
+bool message::at_end(bool current) const {
+    return sd_bus_message_at_end(d_ptr_->message_, !current);
+}
+
+bool message::open_container(char type, const char *contents) {
+    sd_bus_message_open_container(d_ptr_->message_, type, contents);
+    return true;
+}
+
+bool message::close_container() {
+    sd_bus_message_close_container(d_ptr_->message_);
+    return true;
+}

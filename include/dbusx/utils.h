@@ -27,6 +27,8 @@ struct is_vector : public std::false_type {};
 
 template <typename T>
 struct is_vector<std::vector<T>> : public std::true_type {};
+template <typename T>
+struct is_vector<std::vector<T>&> : public std::true_type {};
 
 template <typename T>
 struct is_unordered_map : public std::false_type {};

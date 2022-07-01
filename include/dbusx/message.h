@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <iostream>
 
 #include "utils.h"
 #include "typedef.h"
@@ -56,6 +57,12 @@ public:
             return read_object_path();
         } else if constexpr (std::is_same<Type, signature>::value) {
             return read_signature();
+        } else if constexpr (is_vector<Type>::value) {
+            return read_container<Type>();
+        } else if constexpr (is_unordered_map<Type>::value) {
+            return read_container<Type>();
+        } else if constexpr (is_tuple<Type>::value) {
+            return read_container<Type>();
         } else {
             static_assert(always_false_v<Type>, "unsupported type");
         }
@@ -91,6 +98,12 @@ public:
             return append_object_path(std::forward<T>(v));
         } else if constexpr (std::is_same<Type, signature>::value) {
             return append_signature(std::forward<T>(v));
+        } else if constexpr (is_vector<Type>::value) {
+            return append_container(std::forward<T>(v));
+        } else if constexpr (is_unordered_map<Type>::value) {
+            return append_container(std::forward<T>(v));
+        } else if constexpr (is_tuple<Type>::value) {
+            return append_container(std::forward<T>(v));
         } else {
             static_assert(always_false_v<Type>, "unsupported type");
         }
@@ -137,6 +150,40 @@ public:
     signature read_signature() const;
     fd read_fd() const;
 
+    template <typename T>
+    T read_container() const {
+        using Type = std::remove_cvref_t<T>;
+
+        Type res;
+
+        if constexpr (is_vector<Type>::value) {
+            enter_container(dbusx::type<Type>::signature_nt[0],
+                            dbusx::type<Type>::signature_nt.data() + 1);
+            while (!at_end()) {
+                res.emplace_back(read<typename Type::value_type>());
+            }
+            exit_container();
+        } else if constexpr (is_unordered_map<Type>::value) {
+            enter_container(dbusx::type<Type>::signature_nt[0],
+                            dbusx::type<Type>::signature_nt.data() + 1);
+            while (!at_end()) {
+                enter_container(dbusx::type<Type, true>::signature_nt[1],
+                                dbusx::type<Type, true>::signature_nt.data() + 2);
+                res.emplace(
+                    std::pair{read<typename Type::key_type>(), read<typename Type::mapped_type>()});
+                exit_container();
+            }
+            exit_container();
+        } else if constexpr (is_tuple<Type>::value) {
+            enter_container(dbusx::type<Type, true>::signature_nt[0],
+                            dbusx::type<Type, true>::signature_nt.data() + 1);
+            std::apply([this](auto &...i) { (..., (i = read<decltype(i)>())); }, res);
+            exit_container();
+        }
+
+        return res;
+    }
+
     bool append_byte(char y);
     bool append_bool(bool b);
     bool append_int16(int16_t n);
@@ -151,12 +198,87 @@ public:
     bool append_object_path(const object_path &o);
     bool append_signature(const signature &g);
 
+    template <typename T>
+    bool append_container(T &&c) {
+        using Type = std::remove_cvref_t<T>;
+
+        if constexpr (is_vector<Type>::value) {
+            bool res = open_container(dbusx::type<Type>::signature_nt[0],
+                                      dbusx::type<Type>::signature_nt.data() + 1);
+            if (!res) {
+                return res;
+            }
+
+            for (const typename Type::value_type &i : c) {
+                res = append(i);
+                if (!res) {
+                    break;
+                }
+            }
+
+            return close_container();
+        } else if constexpr (is_unordered_map<Type>::value) {
+            bool res = open_container(dbusx::type<Type>::signature_nt[0],
+                                      dbusx::type<Type>::signature_nt.data() + 1);
+            if (!res) {
+                return res;
+            }
+
+            for (const auto &[k, v] : c) {
+                res = open_container(dbusx::type<Type, true>::signature_nt[1],
+                                     dbusx::type<Type, true>::signature_nt.data() + 2);
+                if (!res) {
+                    break;
+                }
+
+                res = append(k);
+                if (!res) {
+                    break;
+                }
+
+                res = append(v);
+                if (!res) {
+                    break;
+                }
+
+                res = close_container();
+                if (!res) {
+                    break;
+                }
+            }
+
+            return close_container();
+        } else if constexpr (is_tuple<Type>::value) {
+            bool res = open_container(dbusx::type<Type, true>::signature_nt[0],
+                                      dbusx::type<Type, true>::signature_nt.data() + 1);
+            if (!res) {
+                return res;
+            }
+
+            res = std::apply(
+                [this](auto &&...i) { return (... && append(std::forward<decltype(i)>(i))); },
+                std::forward<T>(c));
+            if (!res) {
+                return res;
+            }
+
+            return close_container();
+        }
+    }
+
     bool c_append(const char *signature, ...);
 
     bool send();
 
 private:
     std::unique_ptr<message_private> d_ptr_;
+
+    void enter_container(char type, const char *contents) const;
+    void exit_container() const;
+    bool at_end(bool current = true) const;
+
+    bool open_container(char type, const char *contents);
+    bool close_container();
 };
 
 } // namespace dbusx

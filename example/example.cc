@@ -45,6 +45,21 @@ std::string example::multi_params([[maybe_unused]] const std::string &str1,
     return str2;
 }
 
+std::vector<std::string> example::array(const std::vector<std::string> &a) {
+    return a;
+}
+
+std::tuple<std::string, int> example::struct_(const std::tuple<std::string, int> &s) {
+    std::cout << std::get<0>(s) << std::endl;
+    std::cout << std::get<1>(s) << std::endl;
+    return s;
+}
+
+std::unordered_map<std::string, int32_t> example::dict(
+    const std::unordered_map<std::string, int32_t> &d) {
+    return d;
+}
+
 std::string example::get_read_only_propery() {
     return "read only !!!";
 }
@@ -77,6 +92,9 @@ dbusx::vtable::vtable example::exported() {
                 {"NoReturn", dbusx::method<&example::no_return>::get_vtable()},
                 {"NoReturnOrError", dbusx::method<&example::no_return_or_error>::get_vtable()},
                 {"MultiParams", dbusx::method<&example::multi_params>::get_vtable()},
+                {"Array", dbusx::method<&example::array>::get_vtable()},
+                {"Dict", dbusx::method<&example::dict>::get_vtable()},
+                {"Struct", dbusx::method<&example::struct_>::get_vtable()},
             },
         .properties =
             {

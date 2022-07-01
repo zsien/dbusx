@@ -22,6 +22,12 @@ public:
 
     std::string multi_params(const std::string &str1, const std::string &str2);
 
+    std::vector<std::string> array(const std::vector<std::string> &a);
+    std::unordered_map<std::string, int32_t> dict(
+        const std::unordered_map<std::string, int32_t> &d);
+
+    std::tuple<std::string, int> struct_(const std::tuple<std::string, int> &s);
+
     std::string get_read_only_propery();
     tl::expected<std::string, dbusx::error> get_read_only_propery_e();
 
