@@ -20,6 +20,8 @@ public:
     void no_return();
     tl::expected<void, dbusx::error> no_return_or_error(bool error);
 
+    std::string multi_params(const std::string &str1, const std::string &str2);
+
     std::string get_read_only_propery();
     tl::expected<std::string, dbusx::error> get_read_only_propery_e();
 

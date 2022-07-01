@@ -38,14 +38,28 @@ struct method<F> {
     static void invoke(interface *o, const message &m) {
         C *obj = reinterpret_cast<C *>(o);
 
+        auto call = [obj, &m] {
+            if constexpr (sizeof...(IN) < 2) {
+                // no parameter or one parameter
+                return (obj->*F)(m.read<IN>()...);
+            } else {
+                // order of evaluation of function arguments is unspecified,
+                // but within the initializer-list of a braced-init-list are evaluated in the order
+                // in which they appear.
+                return std::apply(
+                    [obj](auto &&...i) { return (obj->*F)(std::forward<decltype(i)>(i)...); },
+                    std::tuple{m.read<IN>()...});
+            }
+        };
+
         if constexpr (std::is_void_v<OUT>) {
             // no return
-            (obj->*F)(m.read<IN>()...);
+            call();
             message ret = m.create_return();
             bool a = ret.send();
             (void)a;
         } else {
-            OUT r = (obj->*F)(m.read<IN>()...);
+            OUT r = call();
             if constexpr (tl::detail::is_expected<OUT>::value) {
                 // return tl::expected
                 if (r) {

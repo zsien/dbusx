@@ -40,6 +40,11 @@ tl::expected<void, dbusx::error> example::no_return_or_error(bool error) {
     return {};
 }
 
+std::string example::multi_params([[maybe_unused]] const std::string &str1,
+                                  const std::string &str2) {
+    return str2;
+}
+
 std::string example::get_read_only_propery() {
     return "read only !!!";
 }
@@ -71,6 +76,7 @@ dbusx::vtable::vtable example::exported() {
                 {"GetPath", dbusx::method<&example::get_path>::get_vtable()},
                 {"NoReturn", dbusx::method<&example::no_return>::get_vtable()},
                 {"NoReturnOrError", dbusx::method<&example::no_return_or_error>::get_vtable()},
+                {"MultiParams", dbusx::method<&example::multi_params>::get_vtable()},
             },
         .properties =
             {
