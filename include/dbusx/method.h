@@ -1,16 +1,12 @@
 #ifndef DBUSX_METHOD_H
 #define DBUSX_METHOD_H
 
-#include <functional>
-#include <string_view>
 #include <tuple>
-#include <functional>
 
 #include "interface.h"
 #include "message.h"
 #include "type.h"
 #include "vtable.h"
-#include "error.h"
 
 namespace dbusx {
 

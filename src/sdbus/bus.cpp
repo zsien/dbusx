@@ -7,8 +7,6 @@
 
 #include "bus_private.h"
 #include "dbusx/interface.h"
-#include "dbusx/message.h"
-#include "message_private.h"
 
 using namespace dbusx;
 

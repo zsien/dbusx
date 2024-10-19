@@ -1,7 +1,6 @@
 #ifndef DBUSX_ERROR_H
 #define DBUSX_ERROR_H
 
-#include <exception>
 #include <string>
 
 namespace dbusx {

@@ -4,6 +4,8 @@
 #include <dbusx/property.h>
 #include <dbusx/error.h>
 
+#include <iostream>
+
 example::example() {
 }
 

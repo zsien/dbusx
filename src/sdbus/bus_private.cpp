@@ -1,8 +1,5 @@
 #include "bus_private.h"
 
-#include <thread>
-#include <chrono>
-
 #include "dbusx/message.h"
 #include "message_private.h"
 

@@ -11,7 +11,7 @@
 
 #include <systemd/sd-bus.h>
 
-#include "dbusx/method.h"
+#include "dbusx/vtable.h"
 
 namespace dbusx {
 
