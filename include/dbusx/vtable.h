@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <optional>
 
+#include <stdint.h>
+
 #include "error.h"
 
 namespace dbusx {

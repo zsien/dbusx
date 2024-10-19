@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include <stdint.h>
+
 #include "utils.h"
 #include "typedef.h"
 

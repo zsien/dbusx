@@ -7,6 +7,8 @@
 
 #include <tl/expected.hpp>
 
+#include <stdint.h>
+
 class example : public dbusx::interface {
 public:
     example();
