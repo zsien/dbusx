@@ -4,10 +4,10 @@ libdbusx_private_headers = files('''
 '''.split())
 
 libdbusx_sources = files('''
-    sdbus/bus.cc
-    sdbus/bus_private.cc
-    sdbus/message.cc
-    sdbus/message_private.cc
+    sdbus/bus.cpp
+    sdbus/bus_private.cpp
+    sdbus/message.cpp
+    sdbus/message_private.cpp
 '''.split())
 
 libdbusx = library(

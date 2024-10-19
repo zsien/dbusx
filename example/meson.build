@@ -1,6 +1,6 @@
 example_sources = files('''
-    main.cc
-    example.cc
+    main.cpp
+    example.cpp
 '''.split())
 
 executable(
