@@ -1,14 +1,14 @@
 #ifndef DBUSX_PROPERTY_H
 #define DBUSX_PROPERTY_H
 
-#include <optional>
-
-#include <tl/expected.hpp>
-
 #include "vtable.h"
 #include "interface.h"
 #include "message.h"
 #include "error.h"
+
+#include <tl/expected.hpp>
+
+#include <optional>
 
 namespace dbusx {
 

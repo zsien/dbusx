@@ -1,6 +1,9 @@
 #ifndef DBUSX_TYPE_H
 #define DBUSX_TYPE_H
 
+#include "utils.h"
+#include "typedef.h"
+
 #include <any>
 #include <array>
 #include <functional>
@@ -8,9 +11,6 @@
 #include <type_traits>
 
 #include <stdint.h>
-
-#include "utils.h"
-#include "typedef.h"
 
 namespace dbusx {
 

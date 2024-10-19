@@ -1,6 +1,8 @@
 #ifndef DBUSX_UTILS_H
 #define DBUSX_UTILS_H
 
+#include <tl/expected.hpp>
+
 #include <type_traits>
 #include <vector>
 #include <unordered_map>
@@ -8,8 +10,6 @@
 #include <array>
 #include <optional>
 #include <utility>
-
-#include <tl/expected.hpp>
 
 #define check(x)                                                                                   \
     ({                                                                                             \

@@ -1,14 +1,14 @@
 #ifndef DBUSX_VTABLE_H
 #define DBUSX_VTABLE_H
 
+#include "error.h"
+
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include <optional>
 
 #include <stdint.h>
-
-#include "error.h"
 
 namespace dbusx {
 

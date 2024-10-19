@@ -3,15 +3,15 @@
 
 #include "dbusx/bus.h"
 
+#include "dbusx/vtable.h"
+
+#include <systemd/sd-bus.h>
+
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
 #include <string>
 #include <memory>
-
-#include <systemd/sd-bus.h>
-
-#include "dbusx/vtable.h"
 
 namespace dbusx {
 

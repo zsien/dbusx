@@ -1,11 +1,11 @@
 #include "dbusx/message.h"
 
-#include <fcntl.h>
-#include <unistd.h>
-
 #include "message_private.h"
 #include "dbusx/type.h"
 #include "dbusx/error.h"
+
+#include <fcntl.h>
+#include <unistd.h>
 
 using namespace dbusx;
 

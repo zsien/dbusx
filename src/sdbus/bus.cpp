@@ -1,12 +1,12 @@
 #include "dbusx/bus.h"
 
-#include <stdexcept>
-#include <memory>
+#include "bus_private.h"
+#include "dbusx/interface.h"
 
 #include <systemd/sd-bus.h>
 
-#include "bus_private.h"
-#include "dbusx/interface.h"
+#include <stdexcept>
+#include <memory>
 
 using namespace dbusx;
 

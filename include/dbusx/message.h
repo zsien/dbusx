@@ -1,12 +1,12 @@
 #ifndef DBUSX_MESSAGE_H
 #define DBUSX_MESSAGE_H
 
-#include <memory>
-#include <string>
-
 #include "utils.h"
 #include "typedef.h"
 #include "type.h"
+
+#include <memory>
+#include <string>
 
 namespace dbusx {
 
