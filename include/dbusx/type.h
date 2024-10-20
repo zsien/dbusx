@@ -15,7 +15,7 @@
 namespace dbusx {
 
 namespace {
-template <typename T>
+template <typename T, bool general_concept = false>
 struct tuple_items_type {};
 } // namespace
 
@@ -55,26 +55,26 @@ struct type {
             return std::array{'g'};
         } else if constexpr (is_vector<Type>::value) {
             // array
-            return concat(std::array{'a'}, type<typename Type::value_type>::signature);
+            return concat(std::array{'a'}, type<typename Type::value_type, general_concept>::signature);
         } else if constexpr (is_unordered_map<Type>::value) {
             // dict
             if constexpr (general_concept) {
                 return concat(std::array{'a', 'e'},
-                              type<typename Type::key_type>::signature,
-                              type<typename Type::mapped_type>::signature);
+                              type<typename Type::key_type, general_concept>::signature,
+                              type<typename Type::mapped_type, general_concept>::signature);
             } else {
                 return concat(std::array{'a', '{'},
-                              type<typename Type::key_type>::signature,
-                              type<typename Type::mapped_type>::signature,
+                              type<typename Type::key_type, general_concept>::signature,
+                              type<typename Type::mapped_type, general_concept>::signature,
                               std::array{'}'});
             }
         } else if constexpr (is_tuple<Type>::value) {
             // struct
             // top-level cv-qualifiers and reference removed
             if constexpr (general_concept) {
-                return concat(std::array{'r'}, tuple_items_type<Type>::signature);
+                return concat(std::array{'r'}, tuple_items_type<Type, general_concept>::signature);
             } else {
-                return concat(std::array{'('}, tuple_items_type<Type>::signature, std::array{')'});
+                return concat(std::array{'('}, tuple_items_type<Type, general_concept>::signature, std::array{')'});
             }
         } else if constexpr (std::is_same<Type, std::any>::value) {
             return std::array{'v'};
@@ -105,9 +105,9 @@ struct types {
 };
 
 namespace {
-template <typename... T>
-struct tuple_items_type<std::tuple<T...>> {
-    static constexpr auto signature = concat(type<T>::signature...);
+template <typename... T, bool general_concept>
+struct tuple_items_type<std::tuple<T...>, general_concept> {
+    static constexpr auto signature = concat(type<T, general_concept>::signature...);
 };
 } // namespace
 

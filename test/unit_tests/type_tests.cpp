@@ -74,6 +74,10 @@ TEST(type_tests, test_type_map) {
     ASSERT_THAT((type<std::unordered_map<std::string, std::string>>::signature),
                 testing::ElementsAreArray({'a', '{', 's', 's', '}'}));
     EXPECT_TRUE((type<std::unordered_map<std::string, std::string>>::signature_str) == "a{ss}");
+
+    ASSERT_THAT((type<std::unordered_map<std::string, std::string>, true>::signature),
+                testing::ElementsAreArray({'a', 'e', 's', 's'}));
+    EXPECT_TRUE((type<std::unordered_map<std::string, std::string>, true>::signature_str) == "aess");
 }
 
 TEST(type_tests, test_type_struct) {
@@ -81,9 +85,17 @@ TEST(type_tests, test_type_struct) {
                 testing::ElementsAreArray({'(', 's', ')'}));
     EXPECT_TRUE(type<std::tuple<std::string>>::signature_str == "(s)");
 
+    ASSERT_THAT((type<std::tuple<std::string>, true>::signature),
+                testing::ElementsAreArray({'r', 's'}));
+    EXPECT_TRUE((type<std::tuple<std::string>, true>::signature_str) == "rs");
+
     ASSERT_THAT((type<std::tuple<std::string, uint32_t>>::signature),
                 testing::ElementsAreArray({'(', 's', 'u', ')'}));
     EXPECT_TRUE((type<std::tuple<std::string, uint32_t>>::signature_str) == "(su)");
+
+    ASSERT_THAT((type<std::tuple<std::string, uint32_t>, true>::signature),
+                testing::ElementsAreArray({'r', 's', 'u'}));
+    EXPECT_TRUE((type<std::tuple<std::string, uint32_t>, true>::signature_str) == "rsu");
 }
 
 TEST(type_tests, test_type_void) {
@@ -100,8 +112,21 @@ TEST(type_tests, test_type_mixed_container) {
         (type<std::vector<std::unordered_map<std::string, std::tuple<uint32_t, std::string>>>>::
              signature_str) == "aa{s(us)}");
 
+    ASSERT_THAT(
+        (type<std::vector<std::unordered_map<std::string, std::tuple<uint32_t, std::string>>>, true>::
+             signature),
+        testing::ElementsAreArray({'a', 'a', 'e', 's', 'r', 'u', 's'}));
+    EXPECT_TRUE(
+        (type<std::vector<std::unordered_map<std::string, std::tuple<uint32_t, std::string>>>, true>::
+             signature_str) == "aaesrus");
+
     ASSERT_THAT((type<std::unordered_map<std::string, std::vector<uint32_t>>>::signature),
                 testing::ElementsAreArray({'a', '{', 's', 'a', 'u', '}'}));
     EXPECT_TRUE((type<std::unordered_map<std::string, std::vector<uint32_t>>>::signature_str) ==
                 "a{sau}");
+
+    ASSERT_THAT((type<std::unordered_map<std::string, std::vector<uint32_t>>, true>::signature),
+                testing::ElementsAreArray({'a', 'e', 's', 'a', 'u'}));
+    EXPECT_TRUE((type<std::unordered_map<std::string, std::vector<uint32_t>>, true>::signature_str) ==
+                "aesau");
 }
