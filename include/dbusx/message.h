@@ -111,7 +111,7 @@ public:
     template <typename... T>
     bool append(T &&...a) {
         if constexpr (all_pod<T...>::value) {
-            return c_append(types<T...>::signature_nt.data(), a...);
+            return c_append(types<T...>::signature_str.c_str(), a...);
         }
 
         return (... && append(std::forward<T>(a)));
@@ -156,26 +156,26 @@ public:
         Type res;
 
         if constexpr (is_vector<Type>::value) {
-            enter_container(dbusx::type<Type>::signature_nt[0],
-                            dbusx::type<Type>::signature_nt.data() + 1);
+            enter_container(dbusx::type<Type>::signature_str[0],
+                            dbusx::type<Type>::signature_str.c_str() + 1);
             while (!at_end()) {
                 res.emplace_back(read<typename Type::value_type>());
             }
             exit_container();
         } else if constexpr (is_unordered_map<Type>::value) {
-            enter_container(dbusx::type<Type>::signature_nt[0],
-                            dbusx::type<Type>::signature_nt.data() + 1);
+            enter_container(dbusx::type<Type>::signature_str[0],
+                            dbusx::type<Type>::signature_str.c_str() + 1);
             while (!at_end()) {
-                enter_container(dbusx::type<Type, true>::signature_nt[1],
-                                dbusx::type<Type, true>::signature_nt.data() + 2);
+                enter_container(dbusx::type<Type, true>::signature_str[1],
+                                dbusx::type<Type, true>::signature_str.c_str() + 2);
                 res.emplace(
                     std::pair{read<typename Type::key_type>(), read<typename Type::mapped_type>()});
                 exit_container();
             }
             exit_container();
         } else if constexpr (is_tuple<Type>::value) {
-            enter_container(dbusx::type<Type, true>::signature_nt[0],
-                            dbusx::type<Type, true>::signature_nt.data() + 1);
+            enter_container(dbusx::type<Type, true>::signature_str[0],
+                            dbusx::type<Type, true>::signature_str.c_str() + 1);
             std::apply([this](auto &...i) { (..., (i = read<decltype(i)>())); }, res);
             exit_container();
         }
@@ -202,8 +202,8 @@ public:
         using Type = std::remove_cvref_t<T>;
 
         if constexpr (is_vector<Type>::value) {
-            bool res = open_container(dbusx::type<Type>::signature_nt[0],
-                                      dbusx::type<Type>::signature_nt.data() + 1);
+            bool res = open_container(dbusx::type<Type>::signature_str[0],
+                                      dbusx::type<Type>::signature_str.c_str() + 1);
             if (!res) {
                 return res;
             }
@@ -217,15 +217,15 @@ public:
 
             return close_container();
         } else if constexpr (is_unordered_map<Type>::value) {
-            bool res = open_container(dbusx::type<Type>::signature_nt[0],
-                                      dbusx::type<Type>::signature_nt.data() + 1);
+            bool res = open_container(dbusx::type<Type>::signature_str[0],
+                                      dbusx::type<Type>::signature_str.c_str() + 1);
             if (!res) {
                 return res;
             }
 
             for (const auto &[k, v] : c) {
-                res = open_container(dbusx::type<Type, true>::signature_nt[1],
-                                     dbusx::type<Type, true>::signature_nt.data() + 2);
+                res = open_container(dbusx::type<Type, true>::signature_str[1],
+                                     dbusx::type<Type, true>::signature_str.c_str() + 2);
                 if (!res) {
                     break;
                 }
@@ -248,8 +248,8 @@ public:
 
             return close_container();
         } else if constexpr (is_tuple<Type>::value) {
-            bool res = open_container(dbusx::type<Type, true>::signature_nt[0],
-                                      dbusx::type<Type, true>::signature_nt.data() + 1);
+            bool res = open_container(dbusx::type<Type, true>::signature_str[0],
+                                      dbusx::type<Type, true>::signature_str.c_str() + 1);
             if (!res) {
                 return res;
             }

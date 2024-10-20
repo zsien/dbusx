@@ -22,9 +22,9 @@ template <typename C, typename OUT, typename... IN, OUT (C::*F)(/*Context,*/ IN.
 struct method<F> {
     static vtable::method get_vtable() {
         return {
-            .in_signatures = types<IN...>::signature_nt.data(),
+            .in_signatures = types<IN...>::signature_str.c_str(),
             .in_names = {},
-            .out_signatures = type<typename return_type<OUT>::type>::signature_nt.data(),
+            .out_signatures = type<typename return_type<OUT>::type>::signature_str.c_str(),
             .out_names = {},
             .invoker = &method::invoke,
             .flags = 0,

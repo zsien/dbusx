@@ -26,7 +26,7 @@ template <typename C, typename RET, RET (C::*GETTER)()>
 struct property<GETTER> {
     static vtable::property get_vtable() {
         return {
-            .signature = type<typename return_type<RET>::type>::signature_nt.data(),
+            .signature = type<typename return_type<RET>::type>::signature_str.c_str(),
             .getter = get,
             .setter = nullptr,
             .flags = 0,
@@ -69,7 +69,7 @@ template <typename C,
 struct property<GETTER, SETTER> : public property<GETTER> {
     static vtable::property get_vtable() {
         return {
-            .signature = type<typename return_type<RET>::type>::signature_nt.data(),
+            .signature = type<typename return_type<RET>::type>::signature_str.c_str(),
             .getter = property<GETTER>::get,
             .setter = set,
             .flags = 0,

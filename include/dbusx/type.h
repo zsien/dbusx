@@ -85,7 +85,7 @@ struct type {
         }
     });
 
-    static constexpr auto signature_nt = concat(signature, std::array{'\0'});
+    static constexpr auto signature_str = std::string(signature.cbegin(), signature.cend());
 };
 
 /*!
@@ -101,7 +101,7 @@ struct types {
         }
     });
 
-    static constexpr auto signature_nt = concat(signature, std::array{'\0'});
+    static constexpr auto signature_str = std::string(signature.cbegin(), signature.cend());
 };
 
 namespace {

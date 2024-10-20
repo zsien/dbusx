@@ -85,73 +85,73 @@ message::type message::get_type() const {
 
 char message::read_byte() const {
     char i;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<char>::signature_nt.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<char>::signature_str.c_str(), &i);
     return i;
 }
 
 bool message::read_bool() const {
     int i;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<bool>::signature_nt.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<bool>::signature_str.c_str(), &i);
     return i;
 }
 
 int16_t message::read_int16() const {
     int16_t i;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<int16_t>::signature_nt.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<int16_t>::signature_str.c_str(), &i);
     return i;
 }
 
 uint16_t message::read_uint16() const {
     uint16_t i;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<uint16_t>::signature_nt.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<uint16_t>::signature_str.c_str(), &i);
     return i;
 }
 
 int32_t message::read_int32() const {
     int32_t i;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<int32_t>::signature_nt.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<int32_t>::signature_str.c_str(), &i);
     return i;
 }
 
 uint32_t message::read_uint32() const {
     uint32_t i;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<uint32_t>::signature_nt.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<uint32_t>::signature_str.c_str(), &i);
     return i;
 }
 
 int64_t message::read_int64() const {
     int64_t i;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<int64_t>::signature_nt.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<int64_t>::signature_str.c_str(), &i);
     return i;
 }
 
 uint64_t message::read_uint64() const {
     uint64_t i;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<uint64_t>::signature_nt.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<uint64_t>::signature_str.c_str(), &i);
     return i;
 }
 
 double message::read_double() const {
     double i;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<double>::signature_nt.data(), &i);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<double>::signature_str.c_str(), &i);
     return i;
 }
 
 std::string message::read_string() const {
     char *s;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<std::string>::signature_nt.data(), &s);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<std::string>::signature_str.c_str(), &s);
     return s;
 }
 
 object_path message::read_object_path() const {
     char *s;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<object_path>::signature_nt.data(), &s);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<object_path>::signature_str.c_str(), &s);
     return object_path(s);
 }
 
 signature message::read_signature() const {
     char *s;
-    sd_bus_message_read(d_ptr_->message_, dbusx::type<signature>::signature_nt.data(), &s);
+    sd_bus_message_read(d_ptr_->message_, dbusx::type<signature>::signature_str.c_str(), &s);
     return signature(s);
 }
 
@@ -162,60 +162,60 @@ fd message::read_fd() const {
 }
 
 bool message::append_byte(char y) {
-    return sd_bus_message_append(d_ptr_->message_, dbusx::type<char>::signature_nt.data(), y);
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<char>::signature_str.c_str(), y);
 }
 
 bool message::append_bool(bool b) {
-    return sd_bus_message_append(d_ptr_->message_, dbusx::type<bool>::signature_nt.data(), b);
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<bool>::signature_str.c_str(), b);
 }
 
 bool message::append_int16(int16_t n) {
-    return sd_bus_message_append(d_ptr_->message_, dbusx::type<int16_t>::signature_nt.data(), n);
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<int16_t>::signature_str.c_str(), n);
 }
 
 bool message::append_uint16(uint16_t q) {
-    return sd_bus_message_append(d_ptr_->message_, dbusx::type<uint16_t>::signature_nt.data(), q);
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<uint16_t>::signature_str.c_str(), q);
 }
 
 bool message::append_int32(int32_t i) {
-    return sd_bus_message_append(d_ptr_->message_, dbusx::type<int32_t>::signature_nt.data(), i);
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<int32_t>::signature_str.c_str(), i);
 }
 
 bool message::append_uint32(uint32_t u) {
-    return sd_bus_message_append(d_ptr_->message_, dbusx::type<uint32_t>::signature_nt.data(), u);
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<uint32_t>::signature_str.c_str(), u);
 }
 
 bool message::append_int64(int64_t x) {
-    return sd_bus_message_append(d_ptr_->message_, dbusx::type<int64_t>::signature_nt.data(), x);
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<int64_t>::signature_str.c_str(), x);
 }
 
 bool message::append_uint64(uint64_t t) {
-    return sd_bus_message_append(d_ptr_->message_, dbusx::type<uint64_t>::signature_nt.data(), t);
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<uint64_t>::signature_str.c_str(), t);
 }
 
 bool message::append_double(double d) {
-    return sd_bus_message_append(d_ptr_->message_, dbusx::type<double>::signature_nt.data(), d);
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<double>::signature_str.c_str(), d);
 }
 
 bool message::append_fd(fd f) {
-    return sd_bus_message_append(d_ptr_->message_, dbusx::type<fd>::signature_nt.data(), int(f));
+    return sd_bus_message_append(d_ptr_->message_, dbusx::type<fd>::signature_str.c_str(), int(f));
 }
 
 bool message::append_string(const std::string &s) {
     return sd_bus_message_append(d_ptr_->message_,
-                                 dbusx::type<std::string>::signature_nt.data(),
+                                 dbusx::type<std::string>::signature_str.c_str(),
                                  s.c_str());
 }
 
 bool message::append_object_path(const object_path &o) {
     return sd_bus_message_append(d_ptr_->message_,
-                                 dbusx::type<object_path>::signature_nt.data(),
+                                 dbusx::type<object_path>::signature_str.c_str(),
                                  std::string(o).c_str());
 }
 
 bool message::append_signature(const signature &g) {
     return sd_bus_message_append(d_ptr_->message_,
-                                 dbusx::type<signature>::signature_nt.data(),
+                                 dbusx::type<signature>::signature_str.c_str(),
                                  std::string(g).c_str());
 }
 
